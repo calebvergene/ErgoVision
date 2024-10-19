@@ -9,7 +9,7 @@ import {
 } from '@heroicons/react/16/solid'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-const color = 'bg-[#F5F5F5]'
+const color = 'bg-white'
 const textColor = '#545F71'
 
 const tabs = [
@@ -38,7 +38,7 @@ const Tab = ({
     <Link
       href={href}
       data-active={isActive || false}
-      className={`flex h-14 mt-1 w-full items-center text-[${textColor}] rounded-md px-4 data-[active=true]:bg-[#e6e9eb] hover:bg-[#e6e9eb] duration-200`}
+      className={`mt-1 flex h-14 w-full items-center text-[${textColor}] rounded-md px-4 duration-200 hover:bg-[#e6e9eb] data-[active=true]:bg-[#e6e9eb]`}
     >
       <Icon className={`mr-1 h-auto w-6`} />
       <span>{title}</span>

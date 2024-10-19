@@ -12,7 +12,7 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <main className="w-dvh flex h-dvh gap-1 overflow-clip p-2">
+    <main className="w-dvh flex h-dvh gap-1 overflow-clip bg-[#f6f6f6] p-2">
       <div className="w-1/6">
         <Sidebar />
       </div>
