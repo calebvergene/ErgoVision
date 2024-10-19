@@ -16,6 +16,7 @@ import { Screenshot } from '../components/screenshot'
 import { Testimonials } from '../components/testimonials'
 import { Heading, Subheading } from '../components/text'
 
+
 export const metadata: Metadata = {
   description:
     'Prevent workplace injuries with AI-powered ergonomic safety assessments.',
