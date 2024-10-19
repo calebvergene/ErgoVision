@@ -7,7 +7,7 @@ const ProgressIndicator = () => {
   const [location, setLocation] = React.useState<number>(2)
   return (
     <motion.div
-      className="absolute z-10 h-full w-1 rounded-md"
+      className="absolute z-[2] h-full w-1 rounded-md"
       style={{
         backgroundImage:
           'linear-gradient(to bottom, black 50%, transparent 50%)',

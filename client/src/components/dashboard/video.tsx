@@ -1,11 +1,13 @@
-import { CameraIcon } from '@heroicons/react/16/solid'
-
-const Video = () => {
+const VideoWrapper = () => {
   return (
-    <div className="flex aspect-video h-1/2 w-full items-center justify-center rounded-md bg-[#F5F5F5]">
-      <CameraIcon className="h-16 w-16" />
-    </div>
+    <video
+      controls
+      className="flex aspect-video h-fit w-full rounded-md bg-white"
+    >
+      <source src="/dashboard/testvideo.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
   )
 }
 
-export default Video
+export default VideoWrapper
