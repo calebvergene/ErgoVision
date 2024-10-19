@@ -216,7 +216,12 @@ class poseDetector():
         """
         finds most dangerous poses in video per specified amount of frames, adds the frame to class list
         """
+        ## stores each videos critical limbs
         self.critical_limbs.append({self.video_length: critical_limb})
+
+        ## stores each frames reba score
+        self.reba_score = reba_score
+
         if self.video_length % frame == 0:
             if self.video_length != 0:
                 self.critical_poses.append(self.critical_pose)
@@ -225,6 +230,8 @@ class poseDetector():
             "reba_score": reba_score,
             "critical_libs": critical_limb
         }
+
+        ## replaces img in the span of the 100 frames with a new img if has a higher reba score
         if reba_score > self.critical_pose["reba_score"]:
             self.critical_pose = {
             "img": img,

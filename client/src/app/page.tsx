@@ -30,7 +30,7 @@ function Hero() {
           banner={
             <Link
               href="/blog/radiant-raises-100m-series-a-from-tailwind-ventures"
-              className="flex items-center gap-1 rounded-full bg-fuchsia-950/35 px-3 py-0.5 text-sm/6 font-medium text-white data-[hover]:bg-fuchsia-950/30"
+              className="flex items-center gap-1 rounded-full bg-[#1f92af]/60 px-3 py-0.5 text-sm/6 font-medium text-white transition-all duration-300 data-[hover]:bg-[#1f92af]/80"
             >
               See how Radiant uses computer vision to prevent future workplace
               injuries.
@@ -48,7 +48,7 @@ function Hero() {
           </p>
           <div className="mt-12 flex flex-col gap-x-6 gap-y-4 sm:flex-row">
             <Button href="#">Get started</Button>
-            <Button variant="secondary" href="/pricing">
+            <Button variant="secondary" href="/dashboard">
               Access Dashboard
             </Button>
           </div>
