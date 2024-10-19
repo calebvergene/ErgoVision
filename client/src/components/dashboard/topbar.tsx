@@ -1,25 +1,25 @@
-"use client"
+'use client'
 
-import { PlusCircleIcon } from '@heroicons/react/24/outline';
-import { useContext, useState } from 'react';
-import { ContentContext } from './content';
-import FileUploadModal from './fileUploadModal';  // Import the FileUploadModal
+import { PlusCircleIcon } from '@heroicons/react/24/outline'
+import { useContext, useState } from 'react'
+import { ContentContext } from './content'
+import FileUploadModal from './fileUploadModal' // Import the FileUploadModal
 
 const TopBar = () => {
-  const { user } = useContext(ContentContext);
-  
+  const { user } = useContext(ContentContext)
+
   // Modal state for opening and closing the file upload modal
-  const [isFileModalOpen, setIsFileModalOpen] = useState<boolean>(false);
+  const [isFileModalOpen, setIsFileModalOpen] = useState<boolean>(false)
 
   // Function to open the modal
   const openFileModal = () => {
-    setIsFileModalOpen(true);
-  };
+    setIsFileModalOpen(true)
+  }
 
   // Function to close the modal
   const closeModal = () => {
-    setIsFileModalOpen(false);
-  };
+    setIsFileModalOpen(false)
+  }
 
   return (
     <div>
@@ -39,9 +39,9 @@ const TopBar = () => {
           </div>
         </div>
         <div id="status">
-          <button 
-            className="fi flex items-center justify-center whitespace-nowrap rounded-md bg-[#EEF1F4] px-6 py-4 text-[#545F71]" 
-            onClick={openFileModal}  // Open modal on button click
+          <button
+            className="fi flex items-center justify-center whitespace-nowrap rounded-md bg-[#EEF1F4] px-6 py-4 text-[#545F71]"
+            onClick={openFileModal} // Open modal on button click
           >
             <PlusCircleIcon className="mr-2 h-6 w-6 stroke-2" />
             <span className="font-semibold">Upload Video</span>
@@ -51,14 +51,12 @@ const TopBar = () => {
 
       {/* Conditionally render the modal when open */}
       {isFileModalOpen && (
-        <div className="fixed z-10 left-0 top-0 w-full h-full overflow-auto bg-black bg-opacity-50">
-          <div className="">
-            <FileUploadModal closeModal={closeModal} />  {/* Modal with close function */}
-          </div>
+        <div className="fixed left-0 top-0 z-10 h-full w-full overflow-auto bg-black bg-opacity-50">
+          <FileUploadModal closeModal={closeModal} />
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default TopBar;
+export default TopBar

@@ -478,4 +478,5 @@ def execute_REBA_test(pose_detector, img):
                     1.5, (200, 100, 0), 6, cv2.LINE_AA)
 
     pose_detector.find_critical_poses(img, final_score, 100, critical_limbs)
+    pose_detector.process_reba_score(final_score)
     

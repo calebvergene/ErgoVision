@@ -74,7 +74,12 @@ async def upload_video(file: UploadFile = File(...)):
 
         print(pose_detector.critical_poses)
 
-        return JSONResponse(content={"message": "Video processed successfully", "reba_data": "test"}, status_code=200)
+        return JSONResponse(content={
+            "message": "Video processed successfully", 
+            "critical_frames": pose_detector.critical_poses, 
+            "video_reba_score":pose_detector.average_reba_score,
+            "score_percentages": "x"
+        }, status_code=200)
 
     except Exception as e:
         return JSONResponse(content={"error": f"An error occurred: {str(e)}"}, status_code=500)

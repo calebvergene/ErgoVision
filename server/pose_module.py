@@ -30,7 +30,11 @@ class poseDetector():
         self.critical_pose = {}
         
         self.critical_limbs = []
-        self.video_length = 0
+        self.timestamp = 0
+
+        self.reba_score = 0
+        self.total_reba_score = 0
+        self.average_reba_score = 0
     
     def find_pose(self, img, draw=True):
         """
@@ -217,16 +221,14 @@ class poseDetector():
         finds most dangerous poses in video per specified amount of frames, adds the frame to class list
         """
         ## stores each videos critical limbs
-        self.critical_limbs.append({self.video_length: critical_limb})
+        self.critical_limbs.append({self.timestamp: critical_limb})
 
-        ## stores each frames reba score
-        self.reba_score = reba_score
-
-        if self.video_length % frame == 0:
-            if self.video_length != 0:
+        if self.timestamp % frame == 0:
+            if self.timestamp != 0:
                 self.critical_poses.append(self.critical_pose)
             self.critical_pose = {
-            "img": img,
+            ## "img": img,
+            "img": "temp",
             "reba_score": reba_score,
             "critical_libs": critical_limb
         }
@@ -234,7 +236,19 @@ class poseDetector():
         ## replaces img in the span of the 100 frames with a new img if has a higher reba score
         if reba_score > self.critical_pose["reba_score"]:
             self.critical_pose = {
-            "img": img,
+            ## "img": img,
+            "img": "temp",
             "reba_score": reba_score,
-            "critical_limbs": self.critical_limbs[self.video_length]
+            "critical_limbs": self.critical_limbs[self.timestamp]
         }
+
+    def process_reba_score(self, reba_score):
+        """
+        Saves each REBA score and determines if it is the highest score
+        """
+        ## stores each frames reba score
+        self.reba_score = reba_score
+
+        self.total_reba_score += reba_score
+        if self.timestamp != 0:
+                self.average_reba_score = self.total_reba_score / self.timestamp
