@@ -1,53 +1,68 @@
-import { useEffect, useRef } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { FiAlertCircle } from "react-icons/fi";
+import { ArrowUpTrayIcon } from '@heroicons/react/16/solid'
+import React, { useRef, useState } from 'react'
 
 interface FileUploadProps {
-  closeModal: () => void;
+  closeModal: () => void
 }
 
 const FileUploadModal: React.FC<FileUploadProps> = ({ closeModal }) => {
-  const formRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [video, setVideo] = useState<File | null>(null)
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (formRef.current && !formRef.current.contains(event.target as Node)) {
-        closeModal();
-      }
-    };
+  const handleVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setVideo(event.target.files[0])
+    }
+  }
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [closeModal]);
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (video) {
+      console.log('Video file:', video)
+    } else {
+      console.log('No video selected')
+    }
+  }
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click()
+  }
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={closeModal}
-        className="bg-slate-900/20 backdrop-blur p-8 fixed inset-0 z-50 grid place-items-center overflow-y-scroll cursor-pointer"
+    <div
+      onClick={closeModal}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/20 p-8 backdrop-blur"
+    >
+      <div
+        onClick={(e: { stopPropagation: () => any }) => e.stopPropagation()}
+        className="relative w-full max-w-lg rounded-lg bg-white p-6 shadow-lg"
       >
-        <motion.div
-          initial={{ scale: 0, rotate: "12.5deg" }}
-          animate={{ scale: 1, rotate: "0deg" }}
-          exit={{ scale: 0, rotate: "0deg" }}
-          onClick={(e: { stopPropagation: () => any; }) => e.stopPropagation()}
-          className="bg-gradient-to-br from-blue-800 to-slate-700 text-white py-8 pl-8 rounded-lg w-full max-w-lg shadow-xl cursor-default relative overflow-hidden"
-        >
-          <FiAlertCircle className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
-          <div className="relative z-10">
-            <div ref={formRef} className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md transition-all duration-500 ease-in-out">
-              
-            </div>
-          </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  );
-};
+        <h2 className="mb-4 text-2xl font-bold">Upload Video</h2>
+        <div ref={formRef} className="w-full">
+          <form onSubmit={handleSubmit} className="text-center">
+            <input
+              type="file"
+              accept="video/*"
+              onChange={handleVideoChange}
+              ref={fileInputRef}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={handleUploadClick}
+              className="w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              <ArrowUpTrayIcon className="mx-auto h-12 w-12 fill-gray-400" />
+              <span className="block text-lg font-semibold text-gray-900">
+                Upload Video
+              </span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  )
+}
 
-export default FileUploadModal;
+export default FileUploadModal
