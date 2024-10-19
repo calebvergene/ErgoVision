@@ -3,8 +3,6 @@ import mediapipe as mp
 import math
 
 
-
-
 class poseDetector():
     """
     creates instance of video
@@ -17,8 +15,8 @@ class poseDetector():
         self.smooth_landmarks=True
         self.enable_segmentation=False
         self.smooth_segmentation=True
-        self.min_detection_confidence=0.7
-        self.min_tracking_confidence=0.7
+        self.min_detection_confidence=0.5
+        self.min_tracking_confidence=0.5
         self.num_poses=4
 
 
@@ -28,6 +26,11 @@ class poseDetector():
         self.pose = self.mpPose.Pose(self.static_image_mode, self.model_complexity, self.smooth_landmarks, self.enable_segmentation, self.smooth_segmentation, self.min_detection_confidence, self.min_tracking_confidence)
         self.landmark_dict = {0: "nose", 1: "left eye (inner)", 2: "left eye", 3: "left eye (outer)", 4: "right eye (inner)", 5: "right eye", 6: "right eye (outer)", 7: "left ear", 8: "right ear", 9: "mouth (left)", 10: "mouth (right)", 11: "left shoulder", 12: "right shoulder", 13: "left elbow", 14: "right elbow", 15: "left wrist", 16: "right wrist", 17: "left pinky", 18: "right pinky", 19: "left index", 20: "right index", 21: "left thumb", 22: "right thumb", 23: "left hip", 24: "right hip", 25: "left knee", 26: "right knee", 27: "left ankle", 28: "right ankle", 29: "left heel", 30: "right heel", 31: "left foot index", 32: "right foot index"}
 
+        self.critical_poses = []
+        self.critical_pose = {}
+        
+        self.critical_limbs = []
+        self.video_length = 0
     
     def find_pose(self, img, draw=True):
         """
@@ -82,7 +85,7 @@ class poseDetector():
                 # Now draw the usual body pose connections, excluding face connections (0-10)
                 connections = [
                 conn for conn in self.mpPose.POSE_CONNECTIONS
-                if conn[0] > 10 and conn[1] > 10  # Exclude face connections
+                if conn[0] > 10 and conn[1] > 10 or conn[0] == 0 and conn[1] == 0 # Exclude face connections, except nose
             ]
                 self.mpDraw.draw_landmarks(
                     img, 
@@ -135,10 +138,8 @@ class poseDetector():
             
 
         if left_score > right_score:
-            print('facing left')
             return "left"
         else:
-            print('facing right')
             return "right"
 
 
@@ -190,4 +191,43 @@ class poseDetector():
                 img[y_min:y_max, x_min:x_max] = blurred_roi
 
         return img
+    
+
+    def change_line_color(self, img, color, p1, p2):
+        """
+        Changes line color between two landmarks on the body
+        """
         
+        if (self.results.pose_landmarks.landmark[p1['id']].visibility > 0.7 and 
+        self.results.pose_landmarks.landmark[p2['id']].visibility > 0.7):
+
+            # Ensure the coordinates are integers
+            p1_coords = (int(p1['x']), int(p1['y']))
+            p2_coords = (int(p2['x']), int(p2['y']))
+
+            # Draw the line with the specified color
+            if color == "yellow":
+                cv2.line(img, p1_coords, p2_coords, (42, 212, 227), 11)  # Yellow
+            elif color == "red":
+                cv2.line(img, p1_coords, p2_coords, (61, 61, 255), 11)  # Red
+
+    
+    def find_critical_poses(self, img, reba_score, frame, critical_limb):
+        """
+        finds most dangerous poses in video per specified amount of frames, adds the frame to class list
+        """
+        self.critical_limbs.append({self.video_length: critical_limb})
+        if self.video_length % frame == 0:
+            if self.video_length != 0:
+                self.critical_poses.append(self.critical_pose)
+            self.critical_pose = {
+            "img": img,
+            "reba_score": reba_score,
+            "critical_libs": critical_limb
+        }
+        if reba_score > self.critical_pose["reba_score"]:
+            self.critical_pose = {
+            "img": img,
+            "reba_score": reba_score,
+            "critical_limbs": self.critical_limbs[self.video_length]
+        }

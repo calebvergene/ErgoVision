@@ -2,12 +2,6 @@ import numpy as np
 import cv2
 
 
-"""
-- need to calculate all REBA steps per frame
-
-- create a class that takes in (image,landmark_list) as input, then runs all calculations for REBA steps with each body test
-- then, calculate the final score and display the score for each frame
-"""
 
 def calc_neck(direction, nose, shoulder, ear, img, pose_detector):
     """
@@ -40,10 +34,13 @@ def calc_neck(direction, nose, shoulder, ear, img, pose_detector):
         # To accomodate for the person facing the opposite direction
         neck_angle -=90
         neck_angle = neck_angle * -1
-    print(f'neck angle: {neck_angle}')
+    ###print(f'neck angle: {neck_angle}')
+
+    
 
     # Calculate REBA score
     if neck_angle >= 20:
+        critical_limbs.append({"neck": neck_angle})
         return 2
     elif neck_angle <= 0:
         return 2
@@ -81,18 +78,34 @@ def calc_trunk(direction, shoulder, hip, img, pose_detector):
     trunk_angle = pose_detector.find_angle(img, beneath_hip_point_dict, hip_midpoint_dict, shoulder_midpoint_dict) - 180
     if direction == 'left':
         trunk_angle = trunk_angle * -1
-    print(f'trunk angle: {trunk_angle}')
+    ###print(f'trunk angle: {trunk_angle}')
+
+
+    # Draws the line for trunk
+    def trunk_color(img, angle, p1, p2):
+        p1_coords = (int(p1['x']), int(p1['y']))
+        p2_coords = (int(p2['x']), int(p2['y']))
+        if angle >= 60:
+            cv2.line(img, p1_coords, p2_coords, (61, 61, 255), 11)  # Red
+        elif angle >= 20 or angle <= -20:
+            cv2.line(img, p1_coords, p2_coords, (42, 212, 227), 11)  # Yellow
+        else:
+            cv2.line(img, p1_coords, p2_coords, (86, 183, 18), 11)  # Yellow
+
+    trunk_color(img, trunk_angle, shoulder_midpoint_dict, hip_midpoint_dict)
+
 
     # Calculate REBA score
     if trunk_angle >= 60:
+        critical_limbs.append({"trunk": trunk_angle})
         return 4
     elif trunk_angle <= -20:
         return 3
     elif trunk_angle >= 20:
         return 3
-    elif trunk_angle >= 0:
+    elif trunk_angle >= 5:
         return 2
-    elif trunk_angle <= 0:
+    elif trunk_angle <= -5:
         return 2
     else: 
         return 1
@@ -127,8 +140,18 @@ def calc_legs(direction, hip, knee, ankle, img, pose_detector):
         right_leg_angle = right_leg_angle * -1
     
 
-    print(f'left leg angle: {left_leg_angle}')
-    print(f'right leg angle: {right_leg_angle}')
+    ###print(f'left leg angle: {left_leg_angle}')
+    ###print(f'right leg angle: {right_leg_angle}')
+
+    def leg_color(img, angle, p1, p2):
+        if angle >= 60:
+            pose_detector.change_line_color(img, 'red', p1, p2)
+        elif angle >= 30:
+            pose_detector.change_line_color(img, 'yellow', p1, p2)
+
+    leg_color(img, left_leg_angle, left_hip, left_knee)
+    leg_color(img, right_leg_angle, right_hip, right_knee)
+
 
     if left_leg_angle > right_leg_angle:
         leg_angle = right_leg_angle
@@ -137,6 +160,7 @@ def calc_legs(direction, hip, knee, ankle, img, pose_detector):
 
     # Calculate REBA score
     if leg_angle >= 60:
+        critical_limbs.append({"leg": leg_angle})
         return 3
     elif leg_angle >= 30:
         return 2
@@ -216,17 +240,27 @@ def calc_upper_arm(direction, hip, shoulder, elbow, img, pose_detector):
         if right_upper_arm_angle >= 210:
             right_upper_arm_angle = right_upper_arm_angle - 360
 
+    # Color arm based off REBA score
+    def upper_arm_color(img, angle, p1, p2):
+        if angle >= 90:
+            pose_detector.change_line_color(img, 'red', p1, p2)
+        elif angle >= 40 or angle <= -40:
+            pose_detector.change_line_color(img, 'yellow', p1, p2)
 
-    print(f'left upper arm angle: {left_upper_arm_angle}')
-    print(f'right upper arm angle: {right_upper_arm_angle}')
+    upper_arm_color(img, left_upper_arm_angle, left_shoulder, left_elbow)
+    upper_arm_color(img, right_upper_arm_angle, right_shoulder, right_elbow)
 
-    if left_upper_arm_angle > right_upper_arm_angle:
+    ###print(f'left upper arm angle: {left_upper_arm_angle}')
+    ###print(f'right upper arm angle: {right_upper_arm_angle}')
+
+    if left_upper_arm_angle < right_upper_arm_angle:
         upper_arm_angle = right_upper_arm_angle
     else:
         upper_arm_angle = left_upper_arm_angle
 
     # Calculate REBA score
     if upper_arm_angle >= 90:
+        critical_limbs.append({"upper_arm": upper_arm_angle})
         return 4
     elif upper_arm_angle >= 45:
         return 3
@@ -264,8 +298,15 @@ def calc_lower_arm(direction, wrist, shoulder, elbow, img, pose_detector):
         right_lower_arm_angle = 360 - right_lower_arm_angle
 
 
-    print(f'left lower arm angle: {left_lower_arm_angle}')
-    print(f'right lower arm angle: {right_lower_arm_angle}')
+    ###print(f'left lower arm angle: {left_lower_arm_angle}')
+    ###print(f'right lower arm angle: {right_lower_arm_angle}')
+
+    #Make lines yellow when bad posture
+    if left_lower_arm_angle <= 50 or left_lower_arm_angle >= 140:
+        pose_detector.change_line_color(img, 'yellow', left_wrist, left_elbow)
+    if right_lower_arm_angle <= 50 or right_lower_arm_angle >= 140:
+        pose_detector.change_line_color(img, 'yellow', right_wrist, right_elbow)
+
 
     if left_lower_arm_angle > right_lower_arm_angle:
         lower_arm_angle = right_lower_arm_angle
@@ -274,8 +315,10 @@ def calc_lower_arm(direction, wrist, shoulder, elbow, img, pose_detector):
 
     # Calculate REBA score
     if lower_arm_angle <= 80:
+        critical_limbs.append({"lower_arm": lower_arm_angle})
         return 2
     elif lower_arm_angle >= 120:
+        critical_limbs.append({"lower_arm": lower_arm_angle})
         return 2
     else: 
         return 1
@@ -305,8 +348,9 @@ def calc_wrist(direction, index, wrist, elbow, img, pose_detector):
     left_wrist_angle -= 180
     right_wrist_angle -= 180
 
-    print(f'left wrist angle: {left_wrist_angle}')
-    print(f'right wrist angle: {right_wrist_angle}')
+    ###print(f'left wrist angle: {left_wrist_angle}')
+    ###print(f'right wrist angle: {right_wrist_angle}')
+
 
     if abs(left_wrist_angle) < abs(right_wrist_angle):
         wrist_angle = left_wrist_angle
@@ -374,45 +418,52 @@ def final_REBA_score(score_a, score_b):
 
 
 def execute_REBA_test(pose_detector, img):
+
+    # per frame, adds the critical limbs to the list
+    global critical_limbs
+    critical_limbs = []
+
     landmark_list = pose_detector.find_position(img)
     direction = pose_detector.find_direction(landmark_list) #based off ear
-
     neck_result = calc_neck(direction, landmark_list[0], [landmark_list[11], landmark_list[12]], [landmark_list[7], landmark_list[8]], img, pose_detector)
-    print(f'neck score: {neck_result}')
+    ###print(f'neck score: {neck_result}')
 
     trunk_result = calc_trunk(direction, [landmark_list[11], landmark_list[12]], [landmark_list[23], landmark_list[24]], img, pose_detector)
-    print(f'trunk score: {trunk_result}')
+    ###print(f'trunk score: {trunk_result}')
 
     leg_result = calc_legs(direction, [landmark_list[23], landmark_list[24]], [landmark_list[25], landmark_list[26]], [landmark_list[27], landmark_list[28]], img, pose_detector)
-    print(f'leg score: {leg_result}')
+    ###print(f'leg score: {leg_result}')
 
     # Need to implement step 5; weight of object
 
     reba_score_1 = first_REBA_score(neck_result, trunk_result, leg_result)
 
     upper_arm_result = calc_upper_arm(direction, [landmark_list[23], landmark_list[24]], [landmark_list[11], landmark_list[12]], [landmark_list[13], landmark_list[14]], img, pose_detector)
-    print(f'upper arm score: {upper_arm_result}')
+    ###print(f'upper arm score: {upper_arm_result}')
 
     lower_arm_result = calc_lower_arm(direction, [landmark_list[15], landmark_list[16]], [landmark_list[11], landmark_list[12]], [landmark_list[13], landmark_list[14]], img, pose_detector)
-    print(f'lower arm score: {lower_arm_result}')
+    ###print(f'lower arm score: {lower_arm_result}')
 
     wrist_result = calc_wrist(direction, [landmark_list[19], landmark_list[20]], [landmark_list[15], landmark_list[16]], [landmark_list[13], landmark_list[14]], img, pose_detector)
-    print(f'wrist score: {wrist_result}')
+    ###print(f'wrist score: {wrist_result}')
 
     # +1 is temporary because no coupling test, but can assume that most things don't have perfect handle / non existent handle
     reba_score_2 = second_REBA_score(upper_arm_result, lower_arm_result, wrist_result) + 1 
 
     # Need to create coupling score (handles)
     
-    print()
-    print(f'Score 1: {reba_score_1}')
-    print(f'Score 2: {reba_score_2}')
+    ###print(f'Score 1: {reba_score_1}')
+    ###print(f'Score 2: {reba_score_2}')
 
     final_score = final_REBA_score(reba_score_1, reba_score_2)
 
-    print(final_score)
+    ###print(final_score)
 
-    cv2.putText(img, f'REBA Score: {final_score}', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 
-                    2, (255, 255, 255), 2, cv2.LINE_AA)
+    cv2.putText(img, f'ErgoEye Demo', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 
+                    2, (0, 0, 0), 8, cv2.LINE_AA)
 
+    cv2.putText(img, f'REBA Score: {final_score}', (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 
+                    1.5, (200, 100, 0), 6, cv2.LINE_AA)
+
+    pose_detector.find_critical_poses(img, final_score, 100, critical_limbs)
     
