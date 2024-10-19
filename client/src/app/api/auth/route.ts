@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   if (existedUser[0].length > 0) {
     const user = existedUser[0][0] as User
     cookieStore.set('id', user.cookie)
-    return NextResponse.json({ message: 'User already exists' }, { status: 400 })
+    return NextResponse.json({ message: 'User already exists' }, { status: 200 })
   } else {
     const cookie = uuidv4()
     const user = await db.query(`INSERT INTO users (id, cookie, firstName, lastName, company, industry) VALUES ('${cookie}', '${cookie}', '${firstName}', '${lastName}', '${company}', '${industry}')`)

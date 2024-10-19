@@ -14,7 +14,11 @@ const textColor = '#545F71'
 
 const tabs = [
   { Icon: RectangleStackIcon, title: 'Dashboard', href: '/dashboard' },
-  { Icon: CalendarIcon, title: 'Calendar', href: '/dashboard/calendar' },
+  {
+    Icon: CalendarIcon,
+    title: 'New Video',
+    href: '/dashboard',
+  },
   { Icon: UsersIcon, title: 'Users', href: '/dashboard/users' },
   { Icon: ChartBarIcon, title: 'Statistics', href: '/dashboard/statistics' },
 ]
@@ -34,7 +38,7 @@ const Tab = ({
     <Link
       href={href}
       data-active={isActive || false}
-      className={`flex h-14 w-full items-center text-[${textColor}] rounded-md px-4 data-[active=true]:bg-[#EEF1F4]`}
+      className={`flex h-14 mt-1 w-full items-center text-[${textColor}] rounded-md px-4 data-[active=true]:bg-[#e6e9eb] hover:bg-[#e6e9eb] duration-200`}
     >
       <Icon className={`mr-1 h-auto w-6`} />
       <span>{title}</span>
