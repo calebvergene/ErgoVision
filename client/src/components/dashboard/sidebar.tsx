@@ -1,11 +1,9 @@
 'use client'
 
 import {
-  CalendarIcon,
-  ChartBarIcon,
   ChevronRightIcon,
   RectangleStackIcon,
-  UsersIcon,
+  VideoCameraIcon,
 } from '@heroicons/react/16/solid'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -15,12 +13,10 @@ const textColor = '#545F71'
 const tabs = [
   { Icon: RectangleStackIcon, title: 'Dashboard', href: '/dashboard' },
   {
-    Icon: CalendarIcon,
-    title: 'New Video',
-    href: '/dashboard',
+    Icon: VideoCameraIcon,
+    title: 'Your Videos',
+    href: '/dashboard/your-videos',
   },
-  { Icon: UsersIcon, title: 'Users', href: '/dashboard/users' },
-  { Icon: ChartBarIcon, title: 'Statistics', href: '/dashboard/statistics' },
 ]
 
 const Tab = ({
