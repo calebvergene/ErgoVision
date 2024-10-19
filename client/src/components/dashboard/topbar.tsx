@@ -52,7 +52,7 @@ const TopBar = () => {
       {/* Conditionally render the modal when open */}
       {isFileModalOpen && (
         <div className="fixed z-10 left-0 top-0 w-full h-full overflow-auto bg-black bg-opacity-50">
-          <div className="m-4 p-4 w-4/5 mx-auto bg-white rounded-md shadow-lg">
+          <div className="">
             <FileUploadModal closeModal={closeModal} />  {/* Modal with close function */}
           </div>
         </div>
