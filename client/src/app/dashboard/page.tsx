@@ -10,7 +10,7 @@ const page = async () => {
   return (
     <Content user={user}>
       <TopBar />
-      <div className="flex h-5/6 w-full gap-1">
+      <div className="flex h-5/6 w-full flex-1 gap-1">
         <div className="flex w-1/2 flex-col gap-1" id="video">
           <Video />
           <AiTips />
