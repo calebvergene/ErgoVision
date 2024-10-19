@@ -1,11 +1,13 @@
 import BodyPartCard from './body-part-card'
 
+const bodyParts = ['neck', 'upper arm', 'lower arm', 'trunk', 'wrist']
+
 const BodyPartContainer = () => {
   return (
     <div className="mt-4 flex-1 px-3">
       <div className="rounded-m flex h-32 w-full gap-2 rounded-md bg-white">
         {[0, 0, 0].map((_, index) => (
-          <BodyPartCard key={index} />
+          <BodyPartCard key={index} bodyPart={bodyParts[index]} />
         ))}
       </div>
     </div>
