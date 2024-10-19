@@ -14,7 +14,11 @@ const textColor = '#545F71'
 
 const tabs = [
   { Icon: RectangleStackIcon, title: 'Dashboard', href: '/dashboard' },
-  { Icon: CalendarIcon, title: 'Calendar', href: '/dashboard/calendar' },
+  {
+    Icon: CalendarIcon,
+    title: 'Upload Video',
+    href: '/dashboard/upload-video',
+  },
   { Icon: UsersIcon, title: 'Users', href: '/dashboard/users' },
   { Icon: ChartBarIcon, title: 'Statistics', href: '/dashboard/statistics' },
 ]
