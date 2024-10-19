@@ -30,7 +30,19 @@ class poseDetector():
         self.critical_pose = {}
         
         self.critical_limbs = []
-        self.video_length = 0
+        self.timestamp = 0
+
+        self.reba_score = 0
+        self.total_reba_score = 0
+        self.average_reba_score = 0
+
+        self.reba_stats = {"good":0, "fair":0, "poor":0}
+        self.upper_arm_stats = {"good":0, "fair":0, "poor":0}
+        self.lower_arm_stats = {"good":0, "fair":0, "poor":0}
+        self.trunk_stats = {"good":0, "fair":0, "poor":0}
+        self.leg_stats = {"good":0, "fair":0, "poor":0}
+        self.neck_stats = {"good":0, "fair":0, "poor":0}
+        self.wrist_stats = {"good":0, "fair":0, "poor":0}
     
     def find_pose(self, img, draw=True):
         """
@@ -217,16 +229,14 @@ class poseDetector():
         finds most dangerous poses in video per specified amount of frames, adds the frame to class list
         """
         ## stores each videos critical limbs
-        self.critical_limbs.append({self.video_length: critical_limb})
+        self.critical_limbs.append({self.timestamp: critical_limb})
 
-        ## stores each frames reba score
-        self.reba_score = reba_score
-
-        if self.video_length % frame == 0:
-            if self.video_length != 0:
+        if self.timestamp % frame == 0:
+            if self.timestamp != 0:
                 self.critical_poses.append(self.critical_pose)
             self.critical_pose = {
-            "img": img,
+            ## "img": img,
+            "img": "temp",
             "reba_score": reba_score,
             "critical_libs": critical_limb
         }
@@ -234,7 +244,90 @@ class poseDetector():
         ## replaces img in the span of the 100 frames with a new img if has a higher reba score
         if reba_score > self.critical_pose["reba_score"]:
             self.critical_pose = {
-            "img": img,
+            ## "img": img,
+            "img": "temp",
             "reba_score": reba_score,
-            "critical_limbs": self.critical_limbs[self.video_length]
+            "critical_limbs": self.critical_limbs[self.timestamp]
         }
+
+    def process_reba_score(self, reba_score):
+        """
+        Saves each REBA score and determines if it is the highest score
+        """
+        ## stores each frames reba score
+        self.reba_score = reba_score
+
+        self.total_reba_score += reba_score
+        if self.timestamp != 0:
+                self.average_reba_score = self.total_reba_score / self.timestamp
+
+    def process_stats(self, reba_score, upperarm, lowerarm, trunk, leg, neck, wrist):
+        """
+        Processes the REBA score and each limb and categorizes it into good, fair, or poor
+        """
+        if reba_score < 3:
+            self.reba_stats["good"] += 1
+        elif reba_score < 5:
+            self.reba_stats["fair"] += 1
+        else:
+            self.reba_stats["poor"] += 1
+
+        if upperarm < 3:
+            self.upper_arm_stats["good"] += 1
+        elif upperarm < 4:
+            self.upper_arm_stats["fair"] += 1
+        else:
+            self.upper_arm_stats["poor"] += 1
+
+        if lowerarm < 2:
+            self.lower_arm_stats["good"] += 1
+        else:
+            self.lower_arm_stats["poor"] += 1
+
+        if trunk < 2:
+            self.trunk_stats["good"] += 1
+        elif trunk < 3:
+            self.trunk_stats["fair"] += 1
+        else:
+            self.trunk_stats["poor"] += 1
+
+        if leg < 2:
+            self.leg_stats["good"] += 1
+        elif leg < 3:
+            self.leg_stats["fair"] += 1
+        else:
+            self.leg_stats["poor"] += 1
+
+        if neck < 2:
+            self.neck_stats["good"] += 1
+        else:
+            self.neck_stats["poor"] += 1
+
+        if wrist < 2:
+            self.wrist_stats["good"] += 1
+        else:
+            self.wrist_stats["poor"] += 1
+
+    def process_all_stats(self):
+        """
+        Processes all stats (REBA, upper arm, lower arm, etc.) into percentages and returns a dictionary.
+        """
+        def stat_num_to_percent(stat_dict):
+            """
+            Converts the number of good, fair, and poor scores to percentages.
+            """
+            total = sum(stat_dict.values())
+            if total == 0:  # Avoid division by zero
+                return {key: 0 for key in stat_dict.keys()}
+            return {key: round((value / total) * 100) for key, value in stat_dict.items()}
+
+        processed_stats = {
+            "reba_stats": stat_num_to_percent(self.reba_stats),
+            "upper_arm_stats": stat_num_to_percent(self.upper_arm_stats),
+            "lower_arm_stats": stat_num_to_percent(self.lower_arm_stats),
+            "trunk_stats": stat_num_to_percent(self.trunk_stats),
+            "leg_stats": stat_num_to_percent(self.leg_stats),
+            "neck_stats": stat_num_to_percent(self.neck_stats),
+            "wrist_stats": stat_num_to_percent(self.wrist_stats),
+        }
+        return processed_stats

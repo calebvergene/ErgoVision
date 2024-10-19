@@ -1,8 +1,6 @@
 import numpy as np
 import cv2
 
-
-
 def calc_neck(direction, nose, shoulder, ear, img, pose_detector):
     """
     Finds angle between middle shoulder, middle ear, and nose (-90 degrees for neck angle)
@@ -460,22 +458,17 @@ def execute_REBA_test(pose_detector, img):
     ###print(f'wrist score: {wrist_result}')
 
     # +1 is temporary because no coupling test, but can assume that most things don't have perfect handle / non existent handle
-    reba_score_2 = second_REBA_score(upper_arm_result, lower_arm_result, wrist_result) + 1 
-
-    # Need to create coupling score (handles)
+    reba_score_2 = second_REBA_score(upper_arm_result, lower_arm_result, wrist_result) + 1
     
-    ###print(f'Score 1: {reba_score_1}')
-    ###print(f'Score 2: {reba_score_2}')
-
+    # Final REBA score
     final_score = final_REBA_score(reba_score_1, reba_score_2)
 
-    ###print(final_score)
-
-    cv2.putText(img, f'ErgoEye Demo', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 
-                    2, (0, 0, 0), 8, cv2.LINE_AA)
-
-    cv2.putText(img, f'REBA Score: {final_score}', (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 
-                    1.5, (200, 100, 0), 6, cv2.LINE_AA)
-
+    # Find critical poses within the video
     pose_detector.find_critical_poses(img, final_score, 100, critical_limbs)
+
+    # Process the REBA score to find average score throughout the video
+    pose_detector.process_reba_score(final_score)
+
+    # Process the limb statistics of the REBA score
+    pose_detector.process_stats(final_score, upper_arm_result, lower_arm_result, trunk_result, leg_result, neck_result, wrist_result)
     
