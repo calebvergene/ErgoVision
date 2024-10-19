@@ -6,7 +6,6 @@ import { getUserInfo } from '@/utils/get-user-info'
 
 const page = async () => {
   const user = await getUserInfo()
-  console.log(user)
   return (
     <Content user={user}>
       <TopBar />
