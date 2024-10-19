@@ -78,7 +78,7 @@ async def upload_video(file: UploadFile = File(...)):
             "message": "Video processed successfully", 
             "critical_frames": pose_detector.critical_poses, 
             "video_reba_score":pose_detector.average_reba_score,
-            "score_percentages": "x"
+            "percentages": pose_detector.process_all_stats()
         }, status_code=200)
 
     except Exception as e:
