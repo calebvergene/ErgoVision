@@ -13,7 +13,7 @@ const TopBar = () => {
   }
 
   return (
-    <div className="flex justify-end rounded-md bg-white p-4">
+    <div className="flex justify-end rounded-xl bg-white p-4">
       <RecordButton />
       <UploadButton onClick={() => setIsFileModalOpen(!isFileModalOpen)} />
       
