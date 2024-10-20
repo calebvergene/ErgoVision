@@ -22,63 +22,78 @@ const CriticalLimbs = () => {
   }
 
   return (
-    <div className="flex w-full flex-1 flex-col rounded-md bg-white">
-      <div className="p-2">
-        <h1 className="text-2xl font-semibold text-[#0161E8]">
-          Critical Limbs
-        </h1>
-        <p className="text-sm text-gray-500">
+    <div className="flex w-full flex-1 flex-col rounded-lg bg-white shadow-md">
+      <div className="p-4">
+        <h1 className="text-2xl font-semibold text-gray-900">Critical Limbs</h1>
+        <p className="text-md mb-4 text-gray-500">
           These are the limbs that are most critical to the action.
         </p>
       </div>
-      {/* Buttons to navigate frames */}
-      <div className="flex justify-between p-2">
-        <button onClick={handlePreviousFrame} className="border p-1">
+      <div className="flex justify-between px-4 pb-4">
+        <button
+          onClick={handlePreviousFrame}
+          className="rounded-lg bg-[#085E69] px-6 py-3 text-white hover:bg-[#064c56] focus:outline-none focus:ring-2 focus:ring-[#085E69] focus:ring-offset-2"
+        >
           Previous Frame
         </button>
-        <button onClick={handleNextFrame} className="border p-1">
+        <button
+          onClick={handleNextFrame}
+          className="rounded-lg bg-[#085E69] px-6 py-3 text-white hover:bg-[#064c56] focus:outline-none focus:ring-2 focus:ring-[#085E69] focus:ring-offset-2"
+        >
           Next Frame
         </button>
       </div>
-      {/* Display only the selected frame */}
       {criticalFrames[selectedFrameIndex] && (
-        <div
-          key={selectedFrameIndex}
-          className="flex items-center gap-4 border-b border-gray-300 p-4"
-        >
-          <div className="flex-1">
-            <div className="font-medium">Frame {selectedFrameIndex + 1}</div>
-            <div className="flex flex-wrap gap-4">
-              {criticalFrames[selectedFrameIndex].critical_limbs &&
-                Object.entries(
-                  criticalFrames[selectedFrameIndex].critical_limbs,
-                ).map(([limbId, limbs]) => {
-                  console.log(limbId, limbs)
-                  return (
-                    <div key={limbId} className="flex flex-col">
-                      {Array.isArray(limbs) ? (
-                        limbs.map((limb, limbIndex) => (
-                          <div
-                            key={limbIndex}
-                            className="flex items-center gap-2"
+        <div key={selectedFrameIndex} className="p-4">
+          <h2 className="mb-4 text-lg font-medium text-gray-800">
+            Frame {selectedFrameIndex + 1}
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 rounded-lg border border-gray-300">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                    Limb
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                    Angle (°)
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {criticalFrames[selectedFrameIndex].critical_limbs &&
+                  Object.entries(
+                    criticalFrames[selectedFrameIndex].critical_limbs,
+                  ).map(([limbId, limbs]) =>
+                    Array.isArray(limbs) ? (
+                      limbs.map((limb, limbIndex) => (
+                        <tr
+                          key={`${limbId}-${limbIndex}`}
+                          className="hover:bg-gray-50"
+                        >
+                          <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-800">
+                            {Object.keys(limb)[0]}
+                          </td>
+                          <td
+                            className={`whitespace-nowrap px-6 py-4 text-sm font-semibold ${Object.values(limb)[0] > 90 ? 'text-red-600' : 'text-gray-800'}`}
                           >
-                            <span className="font-semibold">
-                              {Object.keys(limb)[0]}:
-                            </span>
-                            <span>{Object.values(limb)[0].toFixed(2)}°</span>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold">
-                            {Object.keys(limbs)[0]}:
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
-            </div>
+                            {Object.values(limb)[0].toFixed(2)}°
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr key={limbId} className="hover:bg-gray-50">
+                        <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-800">
+                          {Object.keys(limbs)[0]}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4 text-sm font-semibold text-gray-800">
+                          N/A
+                        </td>
+                      </tr>
+                    ),
+                  )}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

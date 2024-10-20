@@ -21,6 +21,8 @@ const PoseDetection: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const [socket, setSocket] = useState<WebSocket | null>(null)
   const [intervalId, setIntervalId] = useState<number | null>(null)
+  const [showVideo, setShowVideo] = useState(false)
+  const [alternateContent, setAlternateContent] = useState<string | null>(null)
 
   const [rebaScore, setRebaScore] = useState<number | null>(null)
   const [videoRebaScore, setVideoRebaScore] = useState<number | null>(null)
@@ -91,7 +93,9 @@ const PoseDetection: React.FC = () => {
   const stopWebSocketConnection = () => {
     if (socket) {
       socket.close()
-      setSocket(null) // Clear the socket state
+      setSocket(null)
+      setShowVideo(true)
+      setAlternateContent('Live stream has been stopped.')
     }
     if (intervalId !== null) {
       clearInterval(intervalId)
@@ -107,30 +111,45 @@ const PoseDetection: React.FC = () => {
 
   const startRecording = () => {
     startWebSocketConnection() // Start WebSocket connection
+    setShowVideo(false) // Set showVideo to false
   }
 
-return (
-  <div>
-    <video ref={videoRef} style={{ width: '640px', height: '480px' }} />
-    <div className='flex w-[640px]'>
-      {socket === null ? (
-        <button className="flex rounded-xl bg-[#085E69] px-4 py-3 mt-3 mb-5 ml-2 text-white" onClick={startRecording}>
-          ⦿ Start Recording
-        </button>
+  return (
+    <div>
+      {showVideo ? (
+        <video
+          src={alternateContent || ''}
+          style={{ width: '640px', height: '480px' }}
+        />
       ) : (
-        <>
-          <button className="flex rounded-xl bg-[#085E69] px-4 py-3 mt-3 mb-5 ml-2 text-white" onClick={stopWebSocketConnection}>
-            ◼︎ Stop Recording
-          </button>
-          {rebaScore !== null && (
-            <button className="flex rounded-3xl mt-[0.9rem] text-[#085E69] px-3 py-1 mb-5 ml-2 font-bold text-3xl">
-              {rebaScore}
-            </button>
-          )}
-        </>
+        <video ref={videoRef} style={{ width: '640px', height: '480px' }} />
       )}
+      <div className="flex w-[640px]">
+        {socket === null ? (
+          <button
+            className="mb-5 ml-2 mt-3 flex rounded-xl bg-[#085E69] px-4 py-3 text-white"
+            onClick={startRecording}
+          >
+            ⦿ Start Recording
+          </button>
+        ) : (
+          <>
+            <button
+              className="mb-5 ml-2 mt-3 flex rounded-xl bg-[#085E69] px-4 py-3 text-white"
+              onClick={stopWebSocketConnection}
+            >
+              ◼︎ Stop Recording
+            </button>
+            {rebaScore !== null && (
+              <button className="mb-5 ml-2 mt-[0.9rem] flex rounded-3xl px-3 py-1 text-3xl font-bold text-[#085E69]">
+                {rebaScore}
+              </button>
+            )}
+          </>
+        )}
+      </div>
     </div>
-  </div>
-)}
+  )
+}
 
 export default PoseDetection
