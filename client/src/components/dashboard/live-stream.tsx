@@ -16,7 +16,7 @@ interface RebaResult {
 
 const IMAGE_INTERVAL_MS = 100 // Sending frames every 100ms
 const PoseDetection: React.FC = () => {
-  const {fastapiResponse, setFastapiResponse} = useContext(ContentContext)
+  const { fastapiResponse, setFastapiResponse } = useContext(ContentContext)
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const [socket, setSocket] = useState<WebSocket | null>(null)
@@ -27,16 +27,16 @@ const PoseDetection: React.FC = () => {
   const [stats, setStats] = useState<ClassDictionary | null>(null)
 
   useEffect(() => {
-    // Initialize the webcam feed
-    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        videoRef.current.play()
-      }
-    })
-
-    startWebSocketConnection() // Start WebSocket connection immediately
-  }, [])
+    // Initialize the webcam feed when recording starts
+    if (socket) {
+      navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream
+          videoRef.current.play()
+        }
+      })
+    }
+  }, [socket])
 
   const drawKeypoints = (keypoints: Keypoint[]) => {
     const canvas = canvasRef.current
@@ -106,34 +106,31 @@ const PoseDetection: React.FC = () => {
   }
 
   const startRecording = () => {
-    // Initialize the webcam feed
-    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        videoRef.current.play()
-      }
-    })
-
     startWebSocketConnection() // Start WebSocket connection
   }
 
-  return (
-    <div>
-      <h1>Real-Time Ergonomic Assessment</h1>
-      <video ref={videoRef} style={{ width: '640px', height: '480px' }} />
-      <canvas
-        ref={canvasRef}
-        style={{ position: 'absolute', top: 0, left: 0, zIndex: 100 }}
-        width="640"
-        height="480"
-      />
-      {/* Removed the button for starting detection */}
-      {rebaScore !== null && <p>REBA Score: {rebaScore}</p>}
-      {videoRebaScore !== null && <p>Average REBA Score: {videoRebaScore}</p>}
-      <button onClick={stopWebSocketConnection}>Stop Recording</button>
-      <button onClick={startRecording}>Start Recording</button>
+return (
+  <div>
+    <video ref={videoRef} style={{ width: '640px', height: '480px' }} />
+    <div className='flex w-[640px]'>
+      {socket === null ? (
+        <button className="flex rounded-xl bg-[#085E69] px-4 py-3 mt-3 mb-5 ml-2 text-white" onClick={startRecording}>
+          ⦿ Start Recording
+        </button>
+      ) : (
+        <>
+          <button className="flex rounded-xl bg-[#085E69] px-4 py-3 mt-3 mb-5 ml-2 text-white" onClick={stopWebSocketConnection}>
+            ◼︎ Stop Recording
+          </button>
+          {rebaScore !== null && (
+            <button className="flex rounded-3xl mt-[0.9rem] text-[#085E69] px-3 py-1 mb-5 ml-2 font-bold text-3xl">
+              {rebaScore}
+            </button>
+          )}
+        </>
+      )}
     </div>
-  )
-}
+  </div>
+)}
 
 export default PoseDetection

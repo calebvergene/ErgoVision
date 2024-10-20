@@ -160,3 +160,12 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         process_task.cancel()
         await websocket.close()
+        pose_detector.total_reba_score = 0
+        pose_detector.timestamp = 0
+        pose_detector.reba_stats = {"good":0, "fair":0, "poor":0}
+        pose_detector.upper_arm_stats = {"good":0, "fair":0, "poor":0}
+        pose_detector.lower_arm_stats = {"good":0, "fair":0, "poor":0}
+        pose_detector.trunk_stats = {"good":0, "fair":0, "poor":0}
+        pose_detector.leg_stats = {"good":0, "fair":0, "poor":0}
+        pose_detector.neck_stats = {"good":0, "fair":0, "poor":0}
+        pose_detector.wrist_stats = {"good":0, "fair":0, "poor":0}
