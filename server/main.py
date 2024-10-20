@@ -11,9 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uuid
 
-
 app = FastAPI()
-uuid1 = uuid.uuid1()
 
 origins = ["*"]
 pose_detector = poseDetector()
@@ -30,7 +28,7 @@ app.add_middleware(
 async def upload_video(file: UploadFile = File(...)):
     try:
         # Save the uploaded video file to a temporary location
-        temp_file_path = f"temp_{file.filename}"
+        temp_file_path = f"temp_{uuid.uuid4()}_{file.filename}"
         with open(temp_file_path, "wb") as temp_file:
             temp_file.write(await file.read())
 
@@ -40,19 +38,20 @@ async def upload_video(file: UploadFile = File(...)):
             return JSONResponse(content={"error": "Unable to read video file"}, status_code=400)
 
         # Initialize the pose detector
-        pose_detector = poseDetector()
-
-        frame_width = int(cap.get(3))  # Width of the frames
-        frame_height = int(cap.get(4))  # Height of the frames
+        frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))  # Width of the frames
+        frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))  # Height of the frames
+        frame_fps = cap.get(cv2.CAP_PROP_FPS)  # FPS of the video
 
         # Set up the VideoWriter to save the processed video
-        out = cv2.VideoWriter(f'../client/public/{uuid1}.mp4', cv2.VideoWriter_fourcc(*'XVID'), 20.0, (frame_width, frame_height))
+        output_filename = f'{uuid.uuid4()}.mp4'
+        output_path = os.path.join("../client/public", output_filename)
+        absolute_output_path = os.path.abspath(output_path)
 
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        out = cv2.VideoWriter(output_path, fourcc, frame_fps, (frame_width, frame_height))
 
-        ## Processes image frames
+        # Processes image frames
         while True:
-            #raw_img = cv2.imread('PoseVideos/13.png')
-
             success, raw_img = cap.read()
 
             # Break the loop if the video ends
@@ -65,31 +64,40 @@ async def upload_video(file: UploadFile = File(...)):
                 continue
         
             img = pose_detector.find_pose(raw_img)
-            #img = pose_detector.blur_face(img)
             
-
             try:
                 execute_REBA_test(pose_detector, img)
             except Exception as e:
                 print('Error:', e)
                 continue
             
+            # Write the processed frame to the video
             out.write(img)
             pose_detector.timestamp += 1
+        
         # Release the video after processing
         cap.release()
         out.release()
-        os.remove(temp_file_path)
-        pose_stats = pose_detector.process_all_stats()
 
-        pose_detector.filter_critical_poses(uuid1)
+        # Check if the output file was created
+        if not os.path.exists(output_path) or os.path.getsize(output_path) == 0:
+            return JSONResponse(content={"error": "No frames were written to the output video"}, status_code=500)
+
+        # Re-encode the video using ffmpeg
+        rec_filename = output_filename.replace('.mp4', '-r.mp4')
+        rec_path = os.path.join("../client/public", rec_filename)
+        absolute_rec_path = os.path.abspath(rec_path)
+        os.system(f"ffmpeg -i {absolute_output_path} -c:v libx264 -c:a aac {absolute_rec_path}")
+
+        pose_stats = pose_detector.process_all_stats()
+        pose_detector.filter_critical_poses(output_filename)
 
         return JSONResponse(content={
             "message": "Video processed successfully", 
-            "video": f"{uuid1}.mp4",
+            "video": rec_filename,
             "total_frames": pose_detector.timestamp,
             "critical_frames": pose_detector.critical_poses, 
-            "video_reba_score":pose_detector.average_reba_score,
+            "video_reba_score": pose_detector.average_reba_score,
             "percentages": pose_stats,
             "limb_scores": pose_detector.process_all_limb_scores(pose_stats)
         }, status_code=200)
