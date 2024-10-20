@@ -10,6 +10,7 @@ import os
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uuid
+import subprocess
 
 app = FastAPI()
 
@@ -92,7 +93,6 @@ async def upload_video(file: UploadFile = File(...)):
         pose_stats = pose_detector.process_all_stats()
         pose_detector.filter_critical_poses(output_filename)
 
-
         return JSONResponse(content={
             "message": "Video processed successfully", 
             "video": rec_filename,
@@ -121,54 +121,86 @@ async def receive(websocket: WebSocket, queue: asyncio.Queue):
     except asyncio.QueueFull:
         pass
 
-async def process_video(websocket: WebSocket, queue: asyncio.Queue):
+async def process_video(websocket: WebSocket, queue: asyncio.Queue, save_path):
     """
     Processes video frames using OpenCV and MediaPipe, then sends
     REBA results back to the frontend.
     """
-    while True:
-        data = await queue.get()
-        img_array = np.frombuffer(data, np.uint8)
-        img = cv2.imdecode(img_array, 1)
+    frame_width, frame_height, frame_fps = None, None, 30  # Default FPS if not provided
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = None  # Initialize VideoWriter as None
 
-        if img is None:
-            continue
+    try:
+        while True:
+            data = await queue.get()
+            img_array = np.frombuffer(data, np.uint8)
+            img = cv2.imdecode(img_array, 1)
 
-        img = pose_detector.find_pose(img)  
+            if img is None:
+                continue
 
-        try:
-            # Execute REBA test and get the results
-            execute_REBA_test(pose_detector, img)
-            reba = pose_detector.reba_score
-            pose_stats = pose_detector.process_all_stats()
+            if frame_width is None or frame_height is None:
+                frame_height, frame_width = img.shape[:2]
+                out = cv2.VideoWriter(save_path, fourcc, frame_fps, (frame_width, frame_height))
 
-            # Send the processed data (REBA score and keypoints) back to the frontend
-            result = {
-                'reba_score': reba,
-                "video_reba_score": pose_detector.average_reba_score,
-                "percentages": pose_stats,
-                "limb_scores": pose_detector.live_limbs()
-            }
-            await websocket.send_json(result)
-        except Exception as e:
-            print(f"Error: {e}")
-            continue
+            if out is not None:
+                img = pose_detector.find_pose(img)
+                try:
+                    execute_REBA_test(pose_detector, img)
+                    reba = pose_detector.reba_score
+                    pose_stats = pose_detector.process_all_stats()
+
+                    result = {
+                        'reba_score': reba,
+                        "video_reba_score": pose_detector.average_reba_score,
+                        "percentages": pose_stats,
+                        "limb_scores": pose_detector.live_limbs()
+                    }
+                    await websocket.send_json(result)
+
+                    out.write(img)  # Write the processed frame to the video
+                except Exception as e:
+                    print(f"Error: {e}")
+                    continue
+    finally:
+        if out is not None:
+            out.release()  # Ensure the VideoWriter is released
+
 
 @app.websocket("/ws/process-video")
 async def websocket_endpoint(websocket: WebSocket):
-    """
-    WebSocket endpoint that handles the video stream from the frontend.
-    """
     await websocket.accept()
     queue = asyncio.Queue(maxsize=10)
-    process_task = asyncio.create_task(process_video(websocket, queue))
+    save_path = f'../client/public/ws_video_{uuid.uuid4()}.mp4'
+    absolute_save_path = os.path.abspath(save_path)
+    process_task = asyncio.create_task(process_video(websocket, queue, save_path))
 
     try:
         while True:
             await receive(websocket, queue)
     except WebSocketDisconnect:
+        print("WebSocket disconnected")
+
+        # Ensure the VideoWriter is released and the file is properly closed
+        if os.path.exists(save_path) and os.path.getsize(save_path) > 0:
+            # Re-encode the video using ffmpeg
+            rec_filename = save_path.replace('.mp4', '-r.mp4')
+            absolute_rec_path = os.path.abspath(rec_filename)
+            
+            # Use subprocess to execute ffmpeg
+            try:
+                os.system(f"ffmpeg -i {absolute_save_path} -c:v libx264 -c:a aac {absolute_rec_path}")
+            except subprocess.CalledProcessError as e:
+                print(f"ffmpeg error: {e}")
+        else:
+            print("Error: Video file is empty or not found.")
+                
         process_task.cancel()
         await websocket.close()
+
+        # Ensure the video file was created and has content
+        print(os.path.exists(save_path), os.path.getsize(save_path), "lolololololo")
+        
         # Reset the pose detector stats when WebSocket disconnects
         pose_detector.total_reba_score = 0
         pose_detector.timestamp = 0

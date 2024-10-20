@@ -8,7 +8,7 @@ const VideoWrapper = () => {
   const videoUrl =
     fastapiResponse && fastapiResponse.video
       ? `/${fastapiResponse.video}`
-      : '/dashboard/testvideo.mp4'
+      : '/dashboard/testvideo2.mp4'
   return (
     <video
       controls
