@@ -13,8 +13,8 @@ const TopBar = () => {
   }
 
   return (
-    <div className="flex justify-end rounded-md bg-white p-4">
-      <RecordButton onClick={() => (window.location.href = '/live')} />
+    <div className="flex justify-end rounded-xl bg-white p-4">
+      <RecordButton />
       <UploadButton onClick={() => setIsFileModalOpen(!isFileModalOpen)} />
 
       {/* Conditionally render the modal when open */}

@@ -36,6 +36,7 @@ class poseDetector():
         self.reba_score = 0
         self.total_reba_score = 0
         self.average_reba_score = 0
+        self.all_limbs = {}
 
         self.reba_stats = {"good":0, "fair":0, "poor":0}
         self.upper_arm_stats = {"good":0, "fair":0, "poor":0}
@@ -237,6 +238,7 @@ class poseDetector():
                 self.critical_poses.append(self.critical_pose)
             self.critical_pose = {
             "img": img,
+            "limbs": self.all_limbs,
             "reba_score": reba_score,
             "critical_limbs": critical_limb
         }
@@ -245,6 +247,7 @@ class poseDetector():
         if reba_score > self.critical_pose["reba_score"]:
             self.critical_pose = {
             "img": img,
+            "limbs": self.all_limbs,
             "reba_score": reba_score,
             "critical_limbs": self.critical_limbs[self.timestamp]
         }
