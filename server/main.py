@@ -72,13 +72,15 @@ async def upload_video(file: UploadFile = File(...)):
         # Clean up the temporary file after processing
         os.remove(temp_file_path)
 
-        print(pose_detector.critical_poses)
+        pose_stats = pose_detector.process_all_stats()
 
         return JSONResponse(content={
             "message": "Video processed successfully", 
+            "total_frames": pose_detector.timestamp,
             "critical_frames": pose_detector.critical_poses, 
             "video_reba_score":pose_detector.average_reba_score,
-            "percentages": pose_detector.process_all_stats()
+            "percentages": pose_stats,
+            "limb_scores": pose_detector.process_all_limb_scores(pose_stats)
         }, status_code=200)
 
     except Exception as e:

@@ -238,7 +238,7 @@ class poseDetector():
             ## "img": img,
             "img": "temp",
             "reba_score": reba_score,
-            "critical_libs": critical_limb
+            "critical_limbs": critical_limb
         }
 
         ## replaces img in the span of the 100 frames with a new img if has a higher reba score
@@ -331,3 +331,37 @@ class poseDetector():
             "wrist_stats": stat_num_to_percent(self.wrist_stats),
         }
         return processed_stats
+
+    def calculate_score(self, limb_stats):
+        """
+        Calculates the score based on the formula:
+        Score = Poor Percentage Average + 0.5 * Fair Percentage Average
+        Score is capped between 1 and 10.
+        """
+        fair_percentage = limb_stats.get('fair', 0)
+        poor_percentage = limb_stats.get('poor', 0)
+
+        # Calculate score
+        score = poor_percentage + (0.5 * fair_percentage)
+
+        # Cap the score between 1 and 10
+        if score < 20:
+            score = 1
+        else:
+            score = int(str(score)[0])
+        return score
+
+    def process_all_limb_scores(self, processed_stats):
+        """
+        Processes the percentages from the processed_stats dictionary and assigns a score (1-10) to each limb.
+        """
+        limb_scores = {
+            "reba_score": self.calculate_score(processed_stats["reba_stats"]),
+            "upper_arm_score": self.calculate_score(processed_stats["upper_arm_stats"]),
+            "lower_arm_score": self.calculate_score(processed_stats["lower_arm_stats"]),
+            "trunk_score": self.calculate_score(processed_stats["trunk_stats"]),
+            "leg_score": self.calculate_score(processed_stats["leg_stats"]),
+            "neck_score": self.calculate_score(processed_stats["neck_stats"]),
+            "wrist_score": self.calculate_score(processed_stats["wrist_stats"]),
+        }
+        return limb_scores
