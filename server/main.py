@@ -9,9 +9,11 @@ import asyncio
 import os
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import uuid
 
 
 app = FastAPI()
+uuid1 = uuid.uuid1()
 
 origins = ["*"]
 pose_detector = poseDetector()
@@ -44,8 +46,7 @@ async def upload_video(file: UploadFile = File(...)):
         frame_height = int(cap.get(4))  # Height of the frames
 
         # Set up the VideoWriter to save the processed video
-        # Define codec and create VideoWriter object ('XVID' codec is common for .avi files)
-        out = cv2.VideoWriter('../client/public/videos/processed_video.mp4', cv2.VideoWriter_fourcc(*'XVID'), 20.0, (frame_width, frame_height))
+        out = cv2.VideoWriter(f'../client/public/{uuid1}.mp4', cv2.VideoWriter_fourcc(*'XVID'), 20.0, (frame_width, frame_height))
 
 
         ## Processes image frames
@@ -78,11 +79,14 @@ async def upload_video(file: UploadFile = File(...)):
         # Release the video after processing
         cap.release()
         out.release()
-
+        os.remove(temp_file_path)
         pose_stats = pose_detector.process_all_stats()
+
+        pose_detector.filter_critical_poses(uuid1)
 
         return JSONResponse(content={
             "message": "Video processed successfully", 
+            "video": f"{uuid1}.mp4",
             "total_frames": pose_detector.timestamp,
             "critical_frames": pose_detector.critical_poses, 
             "video_reba_score":pose_detector.average_reba_score,
