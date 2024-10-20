@@ -63,11 +63,8 @@ const FileUploadModal: React.FC<FileUploadProps> = ({ closeModal }) => {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl"
+        className="relative w-full max-w-md rounded-lg bg-white pb-6 px-6 shadow-xl"
       >
-        <h2 className="mb-6 text-center text-2xl font-bold text-gray-900">
-          Upload Video
-        </h2>
         <div ref={formRef} className="w-full">
           <form onSubmit={handleSubmit} className="space-y-6">
             <input
@@ -83,7 +80,7 @@ const FileUploadModal: React.FC<FileUploadProps> = ({ closeModal }) => {
               <button
                 type="button"
                 onClick={handleUploadClick}
-                className="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-10 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                className="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-10 text-center hover:border-gray-400 focus:outline-none"
               >
                 <ArrowUpTrayIcon className="mb-3 h-12 w-12 text-gray-400" />
                 <span className="block text-lg font-semibold text-gray-700">
@@ -97,17 +94,10 @@ const FileUploadModal: React.FC<FileUploadProps> = ({ closeModal }) => {
                   src={URL.createObjectURL(video)}
                   className="max-h-[50vh] w-full rounded-lg object-contain"
                 />
-                <div className="flex justify-between">
-                  <button
-                    type="button"
-                    onClick={handleRemoveVideo}
-                    className="rounded bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                  >
-                    Remove Video
-                  </button>
+                <div className="flex justify-end">
                   <button
                     type="submit"
-                    className="rounded bg-[#0161E8] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0161E8]/80 focus:outline-none focus:ring-2 focus:ring-[#0161E8] focus:ring-offset-2"
+                    className="rounded bg-[#085E69] px-4 py-2 text-sm font-semibold text-white hover:bg-[#085E69]/80 focus:outline-none"
                   >
                     Analyze
                   </button>
@@ -116,12 +106,6 @@ const FileUploadModal: React.FC<FileUploadProps> = ({ closeModal }) => {
             )}
           </form>
         </div>
-        <button
-          onClick={closeModal}
-          className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-        >
-          &times;
-        </button>
       </div>
     </div>
   )

@@ -40,6 +40,14 @@ async def upload_video(file: UploadFile = File(...)):
         # Initialize the pose detector
         pose_detector = poseDetector()
 
+        frame_width = int(cap.get(3))  # Width of the frames
+        frame_height = int(cap.get(4))  # Height of the frames
+
+        # Set up the VideoWriter to save the processed video
+        # Define codec and create VideoWriter object ('XVID' codec is common for .avi files)
+        out = cv2.VideoWriter('../client/public/videos/processed_video.mp4', cv2.VideoWriter_fourcc(*'XVID'), 20.0, (frame_width, frame_height))
+
+
         ## Processes image frames
         while True:
             #raw_img = cv2.imread('PoseVideos/13.png')
@@ -64,13 +72,12 @@ async def upload_video(file: UploadFile = File(...)):
             except Exception as e:
                 print('Error:', e)
                 continue
-
+            
+            out.write(img)
             pose_detector.timestamp += 1
         # Release the video after processing
         cap.release()
-
-        # Clean up the temporary file after processing
-        os.remove(temp_file_path)
+        out.release()
 
         pose_stats = pose_detector.process_all_stats()
 
