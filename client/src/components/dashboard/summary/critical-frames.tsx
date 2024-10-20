@@ -13,7 +13,6 @@ const CriticalFrameCard = ({ criticalLimbs }: CriticalFrameCardProps) => {
     <div className="h-fit w-auto rounded-md object-cover">
       <img
         src={`https://placehold.co/300x200?text=${keyframe}`}
-        alt="placeholder"
         style={{ opacity: keyframe === '102' ? 1 : 0.5 }}
       />
       {/* <div>

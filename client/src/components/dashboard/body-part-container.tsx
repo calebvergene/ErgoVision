@@ -1,14 +1,28 @@
-import BodyPartCard from './body-part-card'
+'use client'
 
-const bodyParts = ['neck', 'upper arm', 'lower arm', 'trunk', 'wrist']
+import { useContext } from 'react'
+import BodyPartCard from './body-part-card'
+import { ContentContext } from './content'
 
 const BodyPartContainer = () => {
+  const { fastapiResponse } = useContext(ContentContext)
+  const limbScores = fastapiResponse?.limb_scores
+
   return (
-    <div className="mt-4 flex-1 px-3">
-      <div className="rounded-m flex h-32 w-full gap-2 rounded-md bg-white">
-        {[0, 0, 0].map((_, index) => (
-          <BodyPartCard key={index} bodyPart={bodyParts[index]} />
-        ))}
+    <div className="mt-4 flex-1 overflow-x-scroll px-3">
+      <div className="rounded-m flex gap-2 rounded-md bg-white">
+        {Object.entries(limbScores ?? {})
+          .sort((a, b) => b[1] - a[1]) // Sort by score in descending order
+          .map(([limb, score], index) => {
+            const formattedLimb = limb.replace(/_/g, ' ')
+            return (
+              <BodyPartCard
+                key={index}
+                bodyPart={formattedLimb}
+                score={score}
+              />
+            )
+          })}
       </div>
     </div>
   )
