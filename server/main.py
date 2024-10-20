@@ -46,7 +46,6 @@ async def upload_video(file: UploadFile = File(...)):
         frame_height = int(cap.get(4))  # Height of the frames
 
         # Set up the VideoWriter to save the processed video
-        # Define codec and create VideoWriter object ('XVID' codec is common for .avi files)
         out = cv2.VideoWriter(f'../client/public/{uuid1}.mp4', cv2.VideoWriter_fourcc(*'XVID'), 20.0, (frame_width, frame_height))
 
 
