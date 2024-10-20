@@ -6,6 +6,21 @@
 /client/.pnp.js
 /client/.yarn/install-state.gz
 
+# Remove all image and video types
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.flv
+*.wmv
+
+
 /server/__pycache__
 /server/venv
 /server/ErgoEyeDemo1.mov
