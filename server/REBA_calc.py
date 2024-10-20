@@ -34,7 +34,7 @@ def calc_neck(direction, nose, shoulder, ear, img, pose_detector):
         neck_angle = neck_angle * -1
     ###print(f'neck angle: {neck_angle}')
 
-    all_limbs.append({"neck": neck_angle})
+    self.all_limbs["neck"] = neck_angle
 
     # Calculate REBA score
     if neck_angle >= 20:
@@ -92,7 +92,7 @@ def calc_trunk(direction, shoulder, hip, img, pose_detector):
 
     trunk_color(img, trunk_angle, shoulder_midpoint_dict, hip_midpoint_dict)
 
-    all_limbs.append({"trunk": trunk_angle})
+    self.all_limbs["trunk"] = trunk_angle
 
     # Calculate REBA score
     if trunk_angle >= 60:
@@ -157,7 +157,7 @@ def calc_legs(direction, hip, knee, ankle, img, pose_detector):
     else:
         leg_angle = left_leg_angle
 
-    all_limbs.append({"leg": leg_angle})
+    self.all_limbs["leg"] = leg_angle
 
     # Calculate REBA score
     if leg_angle >= 60:
@@ -259,7 +259,7 @@ def calc_upper_arm(direction, hip, shoulder, elbow, img, pose_detector):
     else:
         upper_arm_angle = left_upper_arm_angle
 
-    all_limbs.append({"upper_arm": upper_arm_angle})
+    self.all_limbs["upper_arm"] = upper_arm_angle
 
     # Calculate REBA score
     if upper_arm_angle >= 90:
@@ -316,7 +316,7 @@ def calc_lower_arm(direction, wrist, shoulder, elbow, img, pose_detector):
     else:
         lower_arm_angle = left_lower_arm_angle
 
-    all_limbs.append({"lower_arm": lower_arm_angle})
+    self.all_limbs["lower_arm"] = lower_arm_angle
 
     # Calculate REBA score
     if lower_arm_angle <= 80:
@@ -362,7 +362,7 @@ def calc_wrist(direction, index, wrist, elbow, img, pose_detector):
     else:
         wrist_angle = right_wrist_angle
     
-    all_limbs.append({"wrist": wrist_angle})
+    self.all_limbs["wrist"] = wrist_angle
 
     # Calculate REBA score
     if wrist_angle <= -15:
@@ -425,13 +425,10 @@ def final_REBA_score(score_a, score_b):
 
 
 def execute_REBA_test(pose_detector, img):
-
+    self.all_limbs = {}
     # per frame, adds the critical limbs to the list
     global critical_limbs
     critical_limbs = []
-
-    global all_limbs
-    all_limbs = []
 
     landmark_list = pose_detector.find_position(img)
     direction = pose_detector.find_direction(landmark_list) #based off ear
