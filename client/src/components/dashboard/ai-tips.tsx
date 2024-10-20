@@ -2,7 +2,7 @@ import { ChevronRightIcon } from '@heroicons/react/16/solid'
 
 const AiTips = () => {
   return (
-    <div className="h-1/2 w-full rounded-md bg-[#F5F5F5] p-4">
+    <div className="w-full flex-1 rounded-md bg-[#F5F5F5] p-4">
       <div className="flex h-fit w-full items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold">AI Tips:</h2>

@@ -1,57 +1,60 @@
-import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
-import React, { useRef, useState } from 'react';
+import { ArrowUpTrayIcon } from '@heroicons/react/24/solid'
+import React, { useRef, useState } from 'react'
+import { ContentContext } from './content'
 
 interface FileUploadProps {
-  closeModal: () => void;
+  closeModal: () => void
 }
 
 const FileUploadModal: React.FC<FileUploadProps> = ({ closeModal }) => {
-  const formRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [video, setVideo] = useState<File | null>(null);
+  const { setFastapiResponse } = React.useContext(ContentContext)
+
+  const formRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [video, setVideo] = useState<File | null>(null)
 
   // Handle video file selection
   const handleVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      setVideo(event.target.files[0]);
+      setVideo(event.target.files[0])
     }
-  };
+  }
 
   // Handle form submission to upload video
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    event.preventDefault()
 
     if (!video) {
-      alert('Please select a video file');
-      return;
+      alert('Please select a video file')
+      return
     }
 
     try {
-      const formData = new FormData();
-      formData.append('file', video);
+      const formData = new FormData()
+      formData.append('file', video)
 
       const response = await fetch('http://localhost:8000/api/upload-video', {
         method: 'POST',
         body: formData,
-      });
+      })
 
-      const data = await response.json();
-      console.log('Server Response:', data);
-      closeModal(); // Close modal after successful upload
+      const data = await response.json()
+      setFastapiResponse(data)
+      closeModal()
     } catch (error) {
-      console.error('Error uploading video:', error);
+      console.error('Error uploading video:', error)
     }
-  };
+  }
 
   // Handle file input click
   const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
+    fileInputRef.current?.click()
+  }
 
   // Remove selected video
   const handleRemoveVideo = () => {
-    setVideo(null);
-  };
+    setVideo(null)
+  }
 
   return (
     <div
@@ -74,7 +77,7 @@ const FileUploadModal: React.FC<FileUploadProps> = ({ closeModal }) => {
               ref={fileInputRef}
               className="hidden"
             />
-            
+
             {/* Upload Button or Video Preview */}
             {!video ? (
               <button
@@ -121,7 +124,7 @@ const FileUploadModal: React.FC<FileUploadProps> = ({ closeModal }) => {
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default FileUploadModal;
+export default FileUploadModal
