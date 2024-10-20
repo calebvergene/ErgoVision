@@ -99,7 +99,7 @@ const FileUploadModal: React.FC<FileUploadProps> = ({ closeModal }) => {
                     type="submit"
                     className="rounded bg-[#085E69] px-4 py-2 text-sm font-semibold text-white hover:bg-[#085E69]/80 focus:outline-none"
                   >
-                    Analyze
+                    Upload
                   </button>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 import math
+import os
 
 
 class poseDetector():
@@ -235,8 +236,7 @@ class poseDetector():
             if self.timestamp != 0:
                 self.critical_poses.append(self.critical_pose)
             self.critical_pose = {
-            ## "img": img,
-            "img": "temp",
+            "img": img,
             "reba_score": reba_score,
             "critical_limbs": critical_limb
         }
@@ -244,8 +244,7 @@ class poseDetector():
         ## replaces img in the span of the 100 frames with a new img if has a higher reba score
         if reba_score > self.critical_pose["reba_score"]:
             self.critical_pose = {
-            ## "img": img,
-            "img": "temp",
+            "img": img,
             "reba_score": reba_score,
             "critical_limbs": self.critical_limbs[self.timestamp]
         }
@@ -364,3 +363,14 @@ class poseDetector():
             "wrist_score": self.calculate_score(processed_stats["wrist_stats"]),
         }
         return limb_scores
+
+    def filter_critical_poses(self, uuid):
+        """
+        - Filters out the critical poses that have a low REBA score
+        - also saves images
+        """
+        uuid1 = uuid
+        self.critical_poses = [pose for pose in self.critical_poses if pose["reba_score"] > 3]
+        for idx, pose in enumerate(self.critical_poses):
+            cv2.imwrite(f"../client/public/{uuid1}{idx}.png", pose["img"])
+            pose["img"] = f"{uuid1}{idx}.png"
