@@ -56,17 +56,18 @@ const CriticalLimbs = () => {
                   console.log(limbId, limbs)
                   return (
                     <div key={limbId} className="flex flex-col">
-                      {limbs.map((limb, limbIndex) => (
-                        <div
-                          key={limbIndex}
-                          className="flex items-center gap-2"
-                        >
-                          <span className="font-semibold">
-                            {Object.keys(limb)[0]}:
-                          </span>
-                          <span>{Object.values(limb)[0].toFixed(2)}°</span>
-                        </div>
-                      ))}
+                      {limbs &&
+                        limbs.map((limb, limbIndex) => (
+                          <div
+                            key={limbIndex}
+                            className="flex items-center gap-2"
+                          >
+                            <span className="font-semibold">
+                              {Object.keys(limb)[0]}:
+                            </span>
+                            <span>{Object.values(limb)[0].toFixed(2)}°</span>
+                          </div>
+                        ))}
                     </div>
                   )
                 })}
