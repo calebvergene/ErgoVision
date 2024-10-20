@@ -14,8 +14,13 @@ const tabs = [
   { Icon: RectangleStackIcon, title: 'Dashboard', href: '/dashboard' },
   {
     Icon: VideoCameraIcon,
-    title: 'Your Videos',
+    title: 'Demo Video',
     href: '/dashboard/your-videos',
+  },
+  {
+    Icon: VideoCameraIcon,
+    title: 'Live',
+    href: '/dashboard/live',
   },
 ]
 
