@@ -35,15 +35,6 @@ export default {
         ],
       },
     },
-    {
-      img: 'temp',
-      reba_score: 2,
-      critical_limbs: [
-        {
-          lower_arm: 148.6311632201729,
-        },
-      ],
-    },
   ],
   video_reba_score: 2.5613577023498695,
   percentages: {
