@@ -98,7 +98,7 @@ const CriticalFramesView = ({
                 <h1 className="w-full rounded-t-md bg-[#0161E8] text-center font-semibold text-white">
                   {item}
                 </h1>
-                <div className="flex w-full flex-1 justify-center rounded-b-md bg-white">
+                <div className="flex w-full flex-1 justify-center rounded-b-md bg-white px-3">
                   {images.map((image, imgIndex) => (
                     <Image
                       key={imgIndex}
@@ -125,7 +125,7 @@ const CriticalFramesView = ({
                 <h1 className="w-full rounded-t-md bg-[#0161E8] text-center font-semibold text-white">
                   {item}
                 </h1>
-                <div className="flex w-full flex-1 justify-center rounded-b-md bg-white">
+                <div className="flex w-full flex-1 justify-center rounded-b-md bg-white px-2">
                   {images.map((image, imgIndex) => (
                     <Image
                       key={imgIndex}
