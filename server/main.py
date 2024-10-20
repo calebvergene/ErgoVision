@@ -125,15 +125,21 @@ async def process_video(websocket: WebSocket, queue: asyncio.Queue):
         if img is None:
             continue
 
-        img = pose_detector.find_pose(img)
+        img = pose_detector.find_pose(img)  
 
         try:
             # Execute REBA test and get the results
             execute_REBA_test(pose_detector, img)
             reba = pose_detector.reba_score
+            pose_stats = pose_detector.process_all_stats()
 
             # Send the processed data (REBA score and keypoints) back to the frontend
-            result = {'reba_score': reba}
+            result = {
+                'reba_score': reba,
+                "video_reba_score": pose_detector.average_reba_score,
+                "percentages": pose_stats,
+
+            }
             await websocket.send_json(result)
         except Exception as e:
             print(f"Error: {e}")

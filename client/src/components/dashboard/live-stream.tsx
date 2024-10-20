@@ -1,6 +1,8 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import type { ClassDictionary } from 'clsx'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { ContentContext } from './content'
 
 interface Keypoint {
   x: number
@@ -14,11 +16,15 @@ interface RebaResult {
 
 const IMAGE_INTERVAL_MS = 100 // Sending frames every 100ms
 const PoseDetection: React.FC = () => {
+  const {fastapiResponse, setFastapiResponse} = useContext(ContentContext)
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const [socket, setSocket] = useState<WebSocket | null>(null)
-  const [rebaScore, setRebaScore] = useState<number | null>(null)
   const [intervalId, setIntervalId] = useState<number | null>(null)
+
+  const [rebaScore, setRebaScore] = useState<number | null>(null)
+  const [videoRebaScore, setVideoRebaScore] = useState<number | null>(null)
+  const [stats, setStats] = useState<ClassDictionary | null>(null)
 
   useEffect(() => {
     // Initialize the webcam feed
@@ -66,7 +72,12 @@ const PoseDetection: React.FC = () => {
 
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data)
+        setFastapiResponse(data)
+        console.log(data)
         setRebaScore(data['reba_score'])
+        setVideoRebaScore(data['video_reba_score'])
+        setStats(data['stats'])
+
         drawKeypoints(data['keypoints']) // Draw the keypoints on the canvas
       }
 
@@ -118,6 +129,7 @@ const PoseDetection: React.FC = () => {
       />
       {/* Removed the button for starting detection */}
       {rebaScore !== null && <p>REBA Score: {rebaScore}</p>}
+      {videoRebaScore !== null && <p>Average REBA Score: {videoRebaScore}</p>}
       <button onClick={stopWebSocketConnection}>Stop Recording</button>
       <button onClick={startRecording}>Start Recording</button>
     </div>
