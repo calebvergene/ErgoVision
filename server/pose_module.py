@@ -29,6 +29,7 @@ class poseDetector():
 
         self.critical_poses = []
         self.critical_pose = {}
+        self.count = 0
         
         self.critical_limbs = []
         self.timestamp = 0
@@ -65,14 +66,11 @@ class poseDetector():
                 # Get the landmark list
                 pose_landmarks = self.results.pose_landmarks.landmark
 
-                if len(pose_landmarks) > 12:
-                    left_shoulder = pose_landmarks[11]  # Left shoulder
-                    right_shoulder = pose_landmarks[12]  # Right shoulder
-                    left_ear = pose_landmarks[7]  # Left ear
-                    right_ear = pose_landmarks[8]  # Right ear
-                else:
-                    print("Pose landmarks are missing key points.")
-
+                # Calculate the midpoints between shoulders and ears
+                left_shoulder = pose_landmarks[11]  # Left shoulder
+                right_shoulder = pose_landmarks[12]  # Right shoulder
+                left_ear = pose_landmarks[7]  # Left ear
+                right_ear = pose_landmarks[8]  # Right ear
 
                 # Midpoint between shoulders
                 mid_shoulders = (
@@ -261,11 +259,10 @@ class poseDetector():
         """
         ## stores each frames reba score
         self.reba_score = reba_score
-        self.timestamp += 1
+        self.count += 1
 
         self.total_reba_score += reba_score
-        if self.timestamp != 0:
-            self.average_reba_score = self.total_reba_score / self.timestamp
+        self.average_reba_score = self.total_reba_score / self.count
 
     def process_stats(self, reba_score, upperarm, lowerarm, trunk, leg, neck, wrist):
         """

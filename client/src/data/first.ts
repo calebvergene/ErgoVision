@@ -83,4 +83,4 @@ export default {
     neck_score: 1,
     wrist_score: 3,
   },
-} as FastAPIResponse
+} as unknown as FastAPIResponse
