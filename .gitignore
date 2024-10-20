@@ -6,6 +6,9 @@
 /client/.pnp.js
 /client/.yarn/install-state.gz
 
+/server/__pycache__
+/server/venv
+/server/ErgoEyeDemo1.mov
 # testing
 /client/coverage
 

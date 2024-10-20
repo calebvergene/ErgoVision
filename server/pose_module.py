@@ -356,7 +356,6 @@ class poseDetector():
         Processes the percentages from the processed_stats dictionary and assigns a score (1-10) to each limb.
         """
         limb_scores = {
-            "reba_score": self.calculate_score(processed_stats["reba_stats"]),
             "upper_arm_score": self.calculate_score(processed_stats["upper_arm_stats"]),
             "lower_arm_score": self.calculate_score(processed_stats["lower_arm_stats"]),
             "trunk_score": self.calculate_score(processed_stats["trunk_stats"]),
