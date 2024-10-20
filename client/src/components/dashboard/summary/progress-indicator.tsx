@@ -22,7 +22,7 @@ const ProgressIndicator = () => {
       }}
       transition={{ duration: 1 }}
     >
-      <div className="absolute bottom-0 left-1/2 mx-auto flex h-8 w-10 -translate-x-1/2 items-center justify-center rounded-full bg-[#0161E8] text-white">
+      <div className="absolute bottom-0 left-1/2 mx-auto flex h-8 w-10 -translate-x-1/2 items-center justify-center rounded-full px-2 bg-[#085E69] text-white">
         {location}
       </div>
     </motion.div>

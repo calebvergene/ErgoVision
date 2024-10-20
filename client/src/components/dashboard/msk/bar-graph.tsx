@@ -9,7 +9,7 @@ const BarGraph = ({ title, stats }: BarGraphProps) => {
   const colors = ['#22A26E', '#FF822E', '#F14F28']
   return (
     <>
-      <div className="h-fit w-full rounded-md bg-white px-1 pb-4 pt-1 capitalize">
+      <div className="h-fit w-full rounded-xl bg-white px-3 pb-4 pt-1 capitalize">
         {title} Score
         <div className="flex h-10 w-full gap-x-1">
           {stats &&

@@ -34,7 +34,7 @@ const Tab = ({
     <Link
       href={href}
       data-active={isActive || false}
-      className={`mt-1 flex h-14 w-full items-center text-[${textColor}] rounded-md px-4 duration-200 hover:bg-[#e6e9eb] data-[active=true]:bg-[#e6e9eb]`}
+      className={`mt-1 flex h-14 w-full items-center text-[${textColor}] rounded-3xl px-4 duration-200 hover:bg-[#e6e9eb] data-[active=true]:bg-[#085E69]/90 data-[active=true]:text-white`}
     >
       <Icon className={`mr-1 h-auto w-6`} />
       <span>{title}</span>
@@ -57,7 +57,7 @@ const Navigation = () => {
 
 const Sidebar = () => {
   return (
-    <div className={`${color} h-full w-full rounded-md px-4 py-4`}>
+    <div className={`${color} h-full w-full rounded-xl px-4 py-4`}>
       <Navigation />
     </div>
   )

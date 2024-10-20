@@ -4,24 +4,21 @@ interface BodyPartCardProps {
 }
 const BodyPartCard = ({ bodyPart, score }: BodyPartCardProps) => {
   const status: 'Good' | 'Fair' | 'Poor' =
-    score > 7 ? 'Good' : score > 4 ? 'Fair' : 'Poor'
+    score > 5 ? 'Poor' : score > 3 ? 'Fair' : 'Good'
 
   // Define colors based on status
   const statusColors = {
     Good: {
-      background: 'bg-green-100',
-      text: 'text-green-500',
-      border: 'border-green-200',
+      background: 'bg-[#0b808d]/70',
+      text: 'text-white',
     },
     Fair: {
-      background: 'bg-yellow-100',
-      text: 'text-yellow-500',
-      border: 'border-yellow-200',
+      background: 'bg-[#085E68]/90',
+      text: 'text-white',
     },
     Poor: {
-      background: 'bg-red-100',
-      text: 'text-red-500',
-      border: 'border-red-200',
+      background: 'bg-[#074d55]',
+      text: 'text-white',
     },
   }
 
@@ -29,10 +26,10 @@ const BodyPartCard = ({ bodyPart, score }: BodyPartCardProps) => {
     <div className="flex min-h-[155px] min-w-[171px] flex-1 flex-col space-y-2 rounded-md bg-[#F3F3F3]">
       <h1 className="px-4 pt-2 font-semibold capitalize">{bodyPart}</h1>
       <div className="relative flex items-center justify-center">
-        <div className={`aspect-square w-full rounded-full bg-white`}></div>
+        <div className={`aspect-square w-11/12 rounded-full bg-white`}></div>
         <div className="absolute bottom-0 right-0">
           <div
-            className={`flex aspect-square h-10 w-10 items-center justify-center rounded-full p-2 text-sm ${statusColors[status].text} ${statusColors[status].background} border ${statusColors[status].border}`}
+            className={`flex aspect-square h-10 w-10 items-center justify-center rounded-full p-2 text-sm ${statusColors[status].text} ${statusColors[status].background}`}
           >
             <p className="text-lg font-bold">{score}</p>
           </div>

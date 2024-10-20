@@ -8,7 +8,7 @@ const MskRiskContainer = () => {
   const { fastapiResponse } = useContext(ContentContext)
 
   return (
-    <div className="flex-0 flex flex-col gap-1">
+    <div className="flex-0 flex flex-col gap-1 mb-3">
       <BarGraph
         title="Overall Assessment"
         stats={fastapiResponse?.percentages.reba_stats}
