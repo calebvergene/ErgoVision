@@ -6,7 +6,6 @@ import {
   VideoCameraIcon,
 } from '@heroicons/react/16/solid'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 const color = 'bg-white'
 const textColor = '#545F71'
 
@@ -33,7 +32,7 @@ const Tab = ({
   return (
     <Link
       href={href}
-      data-active={isActive || false}
+      data-active={isActive}
       className={`mt-1 flex h-14 w-full items-center text-[${textColor}] rounded-3xl px-4 duration-200 hover:bg-[#e6e9eb] data-[active=true]:bg-[#085E69]/90 data-[active=true]:text-white`}
     >
       <Icon className={`mr-1 h-auto w-6`} />
@@ -44,11 +43,10 @@ const Tab = ({
 }
 
 const Navigation = () => {
-  const pathname = usePathname()
   return (
     <div className="flex flex-col">
       {tabs.map((tab, index) => {
-        const isActive = pathname === tab.href
+        const isActive = tab.title === 'Dashboard'
         return <Tab key={tab.title} {...tab} isActive={isActive} />
       })}
     </div>
