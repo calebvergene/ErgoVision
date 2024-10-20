@@ -24,7 +24,7 @@ const getBackgroundColor = (degree: number, range: string) => {
 
 const trunkRange = {
   '0°': [0],
-  '0-20°': [0, 20],
+  '0-20°': [1, 20],
   '20-60°': [20, 60],
   '60°': [60, 100],
 }

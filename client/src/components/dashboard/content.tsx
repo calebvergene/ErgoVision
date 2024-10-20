@@ -46,7 +46,7 @@ const Content = ({
       }}
     >
       {criticalFramesView && (
-        <CriticalFramesView criticalFramesView={criticalFramesView} />
+        <CriticalFramesView criticalFramesView={Number(criticalFramesView)} />
       )}
       <div className="flex h-full w-full flex-col gap-1">{children}</div>
     </ContentContext.Provider>
