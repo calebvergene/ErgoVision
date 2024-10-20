@@ -92,6 +92,7 @@ async def upload_video(file: UploadFile = File(...)):
         pose_stats = pose_detector.process_all_stats()
         pose_detector.filter_critical_poses(output_filename)
 
+
         return JSONResponse(content={
             "message": "Video processed successfully", 
             "video": rec_filename,
@@ -146,6 +147,7 @@ async def process_video(websocket: WebSocket, queue: asyncio.Queue):
                 'reba_score': reba,
                 "video_reba_score": pose_detector.average_reba_score,
                 "percentages": pose_stats,
+                "limb_scores": pose_detector.live_limbs()
             }
             await websocket.send_json(result)
         except Exception as e:

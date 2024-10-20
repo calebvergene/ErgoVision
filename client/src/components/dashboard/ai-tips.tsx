@@ -1,17 +1,45 @@
-import { ChevronRightIcon } from '@heroicons/react/16/solid'
+"use client"
 
-const AiTips = () => {
-  return (
-    <div className="w-full flex-1 rounded-md bg-[#F5F5F5] p-4">
-      <div className="flex h-fit w-full items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">AI Tips:</h2>
-          <p className="text-sm">4 suggested tips</p>
-        </div>
-        <ChevronRightIcon className="h-8 w-8 rounded-full bg-[#E5E5E5] fill-white stroke-2 p-1" />
-      </div>
-    </div>
-  )
+import { ChevronRightIcon } from '@heroicons/react/16/solid';
+import { ContentContext } from './content';
+import { useContext, useState, useEffect } from 'react';
+import type { FastAPIResponse } from '@/types/fastapi';
+import GenerateContent from '@/app/api/auth/gemini'; // Assuming this is an async function
+import PostureAnalysis from './ai_output';
+
+function removeMarkdown(input: string) {
+  // This regex will match the line containing ``` and remove it
+  return input.replace(/^.*```.*$/gm, '');
 }
 
-export default AiTips
+
+const AiTips = () => {
+  const { fastapiResponse } = useContext(ContentContext);
+  const [count, setCount] = useState<number>(0);
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (fastapiResponse) {
+        const generatedText = await GenerateContent(fastapiResponse); // Await the async function
+        if (generatedText) {
+          console.log(JSON.parse(removeMarkdown(generatedText))); // Log the generated text
+          setData(JSON.parse(removeMarkdown(generatedText)))
+          
+        }
+      }
+    };
+
+    fetchData(); // Call the async function
+  }, [count, fastapiResponse]); // Dependencies to trigger re-execution
+
+  return (
+    <div className="w-full flex-1 rounded-md bg-[#F5F5F5] p-4 overflow-y-scroll">
+      <div className="flex h-fit w-full items-center justify-between flex-col overflow-y-scroll">
+        <PostureAnalysis data={data} />;
+      </div>
+    </div>
+  );
+};
+
+export default AiTips;

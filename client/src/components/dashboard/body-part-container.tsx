@@ -1,8 +1,9 @@
 'use client'
 
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import BodyPartCard from './body-part-card'
 import { ContentContext } from './content'
+import GenerateContent from '@/app/api/auth/gemini'
 
 import Leg from '@/../public/bodyparts/leg.png'
 import LowerArm from '@/../public/bodyparts/lowerarm.png'
@@ -14,6 +15,9 @@ import Wrist from '@/../public/bodyparts/wrist.png'
 const BodyPartContainer = () => {
   const { fastapiResponse } = useContext(ContentContext)
   const limbScores = fastapiResponse?.limb_scores
+
+  const [count, setCount] = useState<number | 0>(0)
+ 
 
   return (
     <div className="mt-4 flex-1 overflow-x-scroll px-3">
@@ -36,7 +40,6 @@ const BodyPartContainer = () => {
               wrist: Wrist,
               neck: Neck,
             }
-            console.log(combinedFormattedLimb)
             return (
               <BodyPartCard
                 key={index}
@@ -44,6 +47,7 @@ const BodyPartContainer = () => {
                 score={score}
                 img={limbImage[combinedFormattedLimb as keyof typeof limbImage]}
               />
+            
             )
           })}
       </div>

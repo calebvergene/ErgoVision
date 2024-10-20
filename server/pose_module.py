@@ -46,6 +46,15 @@ class poseDetector():
         self.leg_stats = {"good":0, "fair":0, "poor":0}
         self.neck_stats = {"good":0, "fair":0, "poor":0}
         self.wrist_stats = {"good":0, "fair":0, "poor":0}
+
+        self.highest_angles = {
+            "upper_arm": 0,
+            "lower_arm": 0,
+            "trunk": 0,
+            "neck": 0,
+            "leg": 0,
+            "wrist": 0
+        }
     
     def find_pose(self, img, draw=True):
         """
@@ -261,8 +270,6 @@ class poseDetector():
         self.reba_score = reba_score
         self.count += 1
 
-        print("hello")
-
         self.total_reba_score += reba_score
         self.average_reba_score = self.total_reba_score / self.count
 
@@ -381,3 +388,39 @@ class poseDetector():
             for idx, pose in enumerate(self.critical_poses):
                 cv2.imwrite(f"../client/public/{uuid1}{idx}.png", pose["img"])
                 pose["img"] = f"{uuid1}{idx}.png"
+    
+    def live_limbs(self):
+        """
+        Tracks the highest recorded angle for each limb and returns a score based on the angle.
+        """
+        self.highest_angles = {
+            "upper_arm": 0,
+            "lower_arm": 0,
+            "trunk": 0,
+            "neck": 0,
+            "leg": 0,
+            "wrist": 0
+        }
+
+        # Assuming self.all_limbs contains limb angle data per frame
+        for limb, current_angle in self.all_limbs.items():
+        # Update the highest angle if the current one is greater
+            if current_angle > self.highest_angles[limb]:
+                self.highest_angles[limb] = current_angle
+        
+        # Calculate score based on the highest recorded angles
+        scores = {}
+        for limb, highest_angle in self.highest_angles.items():
+            if highest_angle < 30:
+                score = 1
+            elif highest_angle < 60:
+                score = 3
+            elif highest_angle < 90:
+                score = 5
+            elif highest_angle < 120:
+                score = 7
+            else:
+                score = 9
+            scores[limb] = score
+        
+        return scores

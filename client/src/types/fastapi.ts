@@ -8,6 +8,14 @@ export interface FastAPIResponse {
     limb_scores:      LimbScores;
 }
 
+interface PostureData {
+    criticalFrames: Array<{ frame: number, score: number, recommendation: string }>;
+    limbScores: Array<{ limb: string, score: number, recommendation: string }>;
+    generalRecommendations: string[];
+    overallScore: number;
+    summary: string;
+  }  
+
 export interface CriticalFrame {
     img:             string;
     reba_score:      number;
