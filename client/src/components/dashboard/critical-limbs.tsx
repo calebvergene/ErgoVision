@@ -73,7 +73,6 @@ const CriticalLimbs = () => {
                           <span className="font-semibold">
                             {Object.keys(limbs)[0]}:
                           </span>
-                          <span>{Object.values(limbs)[0].toFixed(2)}°</span>
                         </div>
                       )}
                     </div>
