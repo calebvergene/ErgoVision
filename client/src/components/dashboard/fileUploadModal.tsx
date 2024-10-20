@@ -39,6 +39,7 @@ const FileUploadModal: React.FC<FileUploadProps> = ({ closeModal }) => {
       })
 
       const data = await response.json()
+      console.log(data)
       setFastapiResponse(data)
       closeModal()
     } catch (error) {
@@ -63,7 +64,7 @@ const FileUploadModal: React.FC<FileUploadProps> = ({ closeModal }) => {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-md rounded-lg bg-white pb-6 px-6 shadow-xl"
+        className="relative w-full max-w-md rounded-lg bg-white px-6 pb-6 shadow-xl"
       >
         <div ref={formRef} className="w-full">
           <form onSubmit={handleSubmit} className="space-y-6">

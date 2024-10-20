@@ -1,5 +1,6 @@
 export interface FastAPIResponse {
     message:          string;
+    video:            string;
     critical_frames:  CriticalFrame[];
     video_reba_score: number;
     percentages:      Percentages;
@@ -40,7 +41,7 @@ export interface Stats {
     poor: number;
 }
 
-export interface LimbScores { 
+export interface LimbScores {
     upper_arm_score: number
     lower_arm_score: number
     trunk_score: number
@@ -48,3 +49,6 @@ export interface LimbScores {
     neck_score: number
     wrist_score: number
 }
+
+
+
