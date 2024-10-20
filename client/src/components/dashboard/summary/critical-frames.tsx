@@ -19,14 +19,6 @@ const CriticalFrameCard = ({ criticalLimbs }: CriticalFrameCardProps) => {
         src={`https://placehold.co/300x200?text=${keyframe}`}
         style={{ opacity: keyframe === '102' ? 1 : 0.5 }}
       />
-      {/* <div>
-        {Object.entries(criticalLimbs).map(([limb, angles], index) => (
-          <div key={index}>
-            <strong>{limb}:</strong>{' '}
-            {angles.map((angle: any) => JSON.stringify(angle)).join(', ')}
-          </div>
-        ))}
-      </div> */}
     </button>
   )
 }
