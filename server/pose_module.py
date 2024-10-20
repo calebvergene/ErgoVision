@@ -65,11 +65,14 @@ class poseDetector():
                 # Get the landmark list
                 pose_landmarks = self.results.pose_landmarks.landmark
 
-                # Calculate the midpoints between shoulders and ears
-                left_shoulder = pose_landmarks[11]  # Left shoulder
-                right_shoulder = pose_landmarks[12]  # Right shoulder
-                left_ear = pose_landmarks[7]  # Left ear
-                right_ear = pose_landmarks[8]  # Right ear
+                if len(pose_landmarks) > 12:
+                    left_shoulder = pose_landmarks[11]  # Left shoulder
+                    right_shoulder = pose_landmarks[12]  # Right shoulder
+                    left_ear = pose_landmarks[7]  # Left ear
+                    right_ear = pose_landmarks[8]  # Right ear
+                else:
+                    print("Pose landmarks are missing key points.")
+
 
                 # Midpoint between shoulders
                 mid_shoulders = (
@@ -258,10 +261,11 @@ class poseDetector():
         """
         ## stores each frames reba score
         self.reba_score = reba_score
+        self.timestamp += 1
 
         self.total_reba_score += reba_score
         if self.timestamp != 0:
-                self.average_reba_score = self.total_reba_score / self.timestamp
+            self.average_reba_score = self.total_reba_score / self.timestamp
 
     def process_stats(self, reba_score, upperarm, lowerarm, trunk, leg, neck, wrist):
         """
@@ -373,7 +377,8 @@ class poseDetector():
         - also saves images
         """
         uuid1 = uuid
-        self.critical_poses = [pose for pose in self.critical_poses if pose["reba_score"] > 3]
-        for idx, pose in enumerate(self.critical_poses):
-            cv2.imwrite(f"../client/public/{uuid1}{idx}.png", pose["img"])
-            pose["img"] = f"{uuid1}{idx}.png"
+        if self.critical_poses != 0:
+            self.critical_poses = [pose for pose in self.critical_poses if pose["reba_score"] > 3]
+            for idx, pose in enumerate(self.critical_poses):
+                cv2.imwrite(f"../client/public/{uuid1}{idx}.png", pose["img"])
+                pose["img"] = f"{uuid1}{idx}.png"
