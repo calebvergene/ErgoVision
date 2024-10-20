@@ -75,12 +75,11 @@ export default {
     },
   },
   limb_scores: {
-    reba_score: 2,
     upper_arm_score: 1,
     lower_arm_score: 6,
     trunk_score: 3,
     leg_score: 1,
-    neck_score: 1,
-    wrist_score: 3,
+    neck_score: 3,
+    wrist_score: 1,
   },
 } as FastAPIResponse
