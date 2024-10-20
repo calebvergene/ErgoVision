@@ -92,7 +92,6 @@ async def upload_video(file: UploadFile = File(...)):
         pose_stats = pose_detector.process_all_stats()
         pose_detector.filter_critical_poses(output_filename)
 
-
         return JSONResponse(content={
             "message": "Video processed successfully", 
             "video": rec_filename,
@@ -121,11 +120,16 @@ async def receive(websocket: WebSocket, queue: asyncio.Queue):
     except asyncio.QueueFull:
         pass
 
-async def process_video(websocket: WebSocket, queue: asyncio.Queue):
+async def process_video(websocket: WebSocket, queue: asyncio.Queue, save_path):
     """
     Processes video frames using OpenCV and MediaPipe, then sends
     REBA results back to the frontend.
     """
+    frame_width, frame_height = None, None
+    frame_fps = 30
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = None
+
     while True:
         data = await queue.get()
         img_array = np.frombuffer(data, np.uint8)
@@ -133,6 +137,10 @@ async def process_video(websocket: WebSocket, queue: asyncio.Queue):
 
         if img is None:
             continue
+
+        if frame_width is None or frame_height is None:
+            frame_height, frame_width = img.shape[:2]
+            out = cv2.VideoWriter(save_path, fourcc, frame_fps, (frame_width, frame_height))
 
         img = pose_detector.find_pose(img)  
 
@@ -145,14 +153,25 @@ async def process_video(websocket: WebSocket, queue: asyncio.Queue):
             # Send the processed data (REBA score and keypoints) back to the frontend
             result = {
                 'reba_score': reba,
+                "video": save_path,
                 "video_reba_score": pose_detector.average_reba_score,
                 "percentages": pose_stats,
                 "limb_scores": pose_detector.live_limbs()
             }
             await websocket.send_json(result)
+            
+            # Write the processed frame to the video
+            out.write(img)
         except Exception as e:
             print(f"Error: {e}")
             continue
+
+    if out:
+        out.release()
+
+    # Re-encode the video using ffmpeg
+    rec_filename = save_path.replace('.mp4', '-r.mp4')
+    os.system(f"ffmpeg -i {save_path} -c:v libx264 -c:a aac {rec_filename}")
 
 @app.websocket("/ws/process-video")
 async def websocket_endpoint(websocket: WebSocket):
@@ -161,7 +180,8 @@ async def websocket_endpoint(websocket: WebSocket):
     """
     await websocket.accept()
     queue = asyncio.Queue(maxsize=10)
-    process_task = asyncio.create_task(process_video(websocket, queue))
+    save_path = f'../client/public/ws_video_{uuid.uuid4()}.mp4'
+    process_task = asyncio.create_task(process_video(websocket, queue, save_path))
 
     try:
         while True:
