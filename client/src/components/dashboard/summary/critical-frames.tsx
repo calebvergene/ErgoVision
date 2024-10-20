@@ -8,9 +8,13 @@ interface CriticalFrameCardProps {
 }
 
 const CriticalFrameCard = ({ criticalLimbs }: CriticalFrameCardProps) => {
+  const { setCriticalFramesView } = useContext(ContentContext)
   const keyframe = Object.keys(criticalLimbs)[0]
   return (
-    <div className="h-fit w-auto rounded-md object-cover">
+    <button
+      onClick={() => setCriticalFramesView(keyframe)}
+      className="h-fit w-auto rounded-md object-cover"
+    >
       <img
         src={`https://placehold.co/300x200?text=${keyframe}`}
         style={{ opacity: keyframe === '102' ? 1 : 0.5 }}
@@ -23,7 +27,7 @@ const CriticalFrameCard = ({ criticalLimbs }: CriticalFrameCardProps) => {
           </div>
         ))}
       </div> */}
-    </div>
+    </button>
   )
 }
 
