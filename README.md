@@ -1,52 +1,8 @@
-# Radiant
+##💡Inspiration
+The inspiration for this project came from firsthand experiences working part-time jobs in warehouses, factories, and supermarkets. Musculoskeletal Disorder (MSDs) injuries lead to significant insurance costs, amounting to $180 billion globally and $90 billion in the US alone. Traditional ergonomic assessments are often outdated, n operator-dependent, and unreliable. Conventional methods are reactive, identifying issues only after injuries occur, rather than preventing them. Existing processes are resource-intensive and rely heavily on human operators, causing inconsistencies. Additionally, there is a lack of awareness about how AI can effectively improve ergonomic assessments. We saw the impact that repetitive physical tasks and poor posture can have on workers, leading to injuries that jeopardize both their health and livelihood. The REBA test, popularly used in industry, is easily automated - and that's what we did with our proprietary computer vision and artificial intelligence software.
 
-Radiant is a [Tailwind UI](https://tailwindui.com) site template built using [Tailwind CSS](https://tailwindcss.com) and [Next.js](https://nextjs.org), with a blog powered by [Sanity](https://www.sanity.io).
+##👁️What it does
+This project leverages advanced computer vision technology to analyze employees’ posture in real-time. We have 2 models, one where employers can send previously recorded videos and it runs real-time analysis. Next, we have a realtime mode that analyzes videos in realtime using realtime data processing from SingleStore to our advantage. In both models, we analyze the posture and compare to industry standard to the REBA scale and identify what the employee needs help on, what they could use assistance in, and what is an important issue to address. To further support injury prevention, this project generates AI-driven, personalized recommendations aimed at helping workers adjust their movements and improve their ergonomics.
 
-## Getting started
-
-To get started with this template, first install the npm dependencies:
-
-```bash
-npm install
-```
-
-Next, create a new Sanity project to power the blog within this template:
-
-```bash
-npm create sanity@latest -- --env=.env.local --create-project "Radiant Blog" --dataset production
-```
-
-This will prompt you to create a new Sanity account if you don't have one already. When asked "Would you like to add configuration files for a Sanity project in this Next.js folder?", choose "n".
-
-Next, optionally import the demo seed data for the blog:
-
-```bash
-npx sanity@latest dataset import seed.tar.gz
-```
-
-Next, run the development server:
-
-```bash
-npm run dev
-```
-
-Finally, open [http://localhost:3000](http://localhost:3000) in your browser to view the website.
-
-To manage your blog content, visit the embedded Sanity Studio at [http://localhost:3000/studio](http://localhost:3000/studio).
-
-## Customizing
-
-You can start editing this template by modifying the files in the `/src` folder. The site will auto-update as you edit these files.
-
-## License
-
-This site template is a commercial product and is licensed under the [Tailwind UI license](https://tailwindui.com/license).
-
-## Learn more
-
-To learn more about the technologies used in this site template, see the following resources:
-
-- [Tailwind CSS](https://tailwindcss.com/docs) - the official Tailwind CSS documentation
-- [Next.js](https://nextjs.org/docs) - the official Next.js documentation
-- [Headless UI](https://headlessui.dev) - the official Headless UI documentation
-- [Sanity](https://www.sanity.io) - the Sanity website
+##📊How we built it
+This project was built using SingleStore to handle real-time data processing and video streaming capabilities. The backbone of the system is a seamless integration of real-time video feeds with our posture analysis algorithm. The frontend is solely using Nextjs and the Tailwind CSS framework. The real magic is the backend, all conducted in a python backend communicating using FastAPI to the frontend. Our python script is using various libraries like OpenCV, Numpy, YOLOv5, and real-time Gemini contextualizations to provide an overall and complete analysis.
